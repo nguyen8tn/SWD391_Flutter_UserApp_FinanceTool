@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:swd/main.dart';
 import 'package:swd/services/auth.dart';
+import 'package:swd/services/httprequest.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   State createState() {
@@ -33,14 +35,17 @@ class _LoginPageState extends State<LoginPage> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
-//        AuthService().signInWithGoogle();
-        AuthService().signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) {
+        AuthService()
+            .signInWithGoogle()
+            .then((value) {
+              HttpRequest().getUserDetails(value);
+            })
+            .catchError((e) => {print("asdasasdsa")})
+            .whenComplete(() {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return Random();
-              }
-          ));
-        });
+              }));
+            });
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
