@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:swd/main.dart';
 import 'package:swd/services/auth.dart';
 import 'package:swd/services/httprequest.dart';
+import 'package:swd/widgets/message_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
             .catchError((e) => {print("asdasasdsa")})
             .whenComplete(() {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return Random();
+                return MainPage(appTitle: 'Messaging',);
               }));
             });
       },

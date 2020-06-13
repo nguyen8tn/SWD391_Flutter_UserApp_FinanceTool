@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:swd/widgets/message_widget.dart';
 import 'login_page.dart';
 
 void main() => runApp(MyApp());
@@ -31,26 +32,17 @@ class MyApp extends StatelessWidget {
 
 }
 
-class RandomState extends State<Random> {
+class MainPage extends StatelessWidget {
+  final String appTitle;
+
+  const MainPage({this.appTitle});
+
   @override
-  Widget build(BuildContext context) {
-    final rd = WordPair.random();
-    return MaterialApp (
-      title: "TXT",
-      home: Scaffold(
+  Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("Welcome"),
+          title: Text(appTitle),
         ),
-        body: Center(
-          child: Text(rd.asPascalCase),
-        ),
-      ),
-    );
-  }
+        body: MessagingWidget(),
+      );
 }
-class Random extends StatefulWidget {
-  @override
-  State createState() {
-    return RandomState();
-  }
-}
+
