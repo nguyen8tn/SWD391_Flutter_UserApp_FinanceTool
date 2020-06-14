@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:swd/models/bank.dart';
 import 'package:swd/models/user.dart';
 import 'dart:convert';
 import 'package:http/io_client.dart';
@@ -11,7 +12,8 @@ class HttpRequest {
   Future<String> getUserDetails(User user) async {
     String userDetail = "";
     //var queryParameters = {'id': user.uid};
-    Uri uri = Uri.https('10.0.2.2:5001', '/api/users/details');
+    Uri uri = Uri.https(
+        'https://swd-financial-server.azurewebsites.net', '/api/users/details');
     String _url = "";
     print(Uri.decodeFull(uri.path));
     HttpClient httpClient = bypassSSL();
@@ -47,6 +49,36 @@ class HttpRequest {
 //    }
     //print(responseJson.toString());
     //return User.fromJson(responseJson);
+  }
+
+  Future<List<Bank>> fetchBanks(String keyword) async {
+    List<Bank> result;
+    var queryParameters = {
+      'MinDate': 'one',
+      'Page': '1',
+      'Limit': '10'
+    };
+    //var uri = Uri.https(
+        //'https://swd-financial-server.azurewebsites.net/api/banks', '/api/v1/banks', queryParameters);
+      var url = 'https://run.mocky.io/v3/6b591c7f-8a09-40fd-9f21-e1440020a47d';
+    //print(Uri.decodeFull(uri.path)); 
+    _httpClient = bypassSSL();
+    IOClient ioClient = new IOClient(_httpClient);
+    await ioClient.get(url).then((value) {
+       print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final body = jsonDecode(value.body);
+        final Iterable json  = body["items"];
+        result = json.map((bank) => Bank.fromJson(bank)).toList();
+        result.removeWhere((element) => !element.bankName.contains(keyword.toUpperCase()));
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
   }
 
   void closeConnection() {

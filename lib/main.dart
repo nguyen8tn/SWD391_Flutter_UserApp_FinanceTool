@@ -1,26 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'package:swd/pages/login_page.dart';
 import 'package:swd/widgets/message_widget.dart';
-import 'login_page.dart';
 
 void main() => runApp(MyApp());
 
-//class MyApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      title: "Tile",
-//      home: Scaffold(
-//        appBar: AppBar(
-//          title: Text("Welcome"),
-//        ),
-//        body: Center(
-//          child: Text("Hello"),
-//        ),
-//      ),
-//    );
-//  }
-//}
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
