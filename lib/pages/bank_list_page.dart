@@ -17,7 +17,6 @@ class _BankListpageState extends State<BankListPage> {
     // TODO: implement initState
     super.initState();
     Provider.of<BankListViewModel>(context, listen: false).fetchBanks('bank');
-
   }
   @override
   Widget build(BuildContext context) {

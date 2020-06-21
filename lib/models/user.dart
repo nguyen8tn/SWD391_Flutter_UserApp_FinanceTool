@@ -8,5 +8,5 @@ class User {
 
   User(this.token, this.uid, this.name, this.email);
 
-  Map<String, dynamic> toJson() => {'uid': uid, 'token': token};
+  Map<String, dynamic> toJson() => {'uid': uid, 'token': token, 'name': name, 'email' : email};
 }

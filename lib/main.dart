@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:swd/pages/home_page.dart';
 import 'package:swd/pages/login_page.dart';
 import 'package:swd/widgets/message_widget.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -14,10 +19,8 @@ class MyApp extends StatelessWidget {
   }
 
 }
-
 class MainPage extends StatelessWidget {
   final String appTitle;
-
   const MainPage({this.appTitle});
 
   @override
