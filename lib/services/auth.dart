@@ -30,6 +30,8 @@ class AuthService {
     IdTokenResult idTokenResult;
     Duration duration = new Duration(hours: 1);
     idTokenResult = await firebaseUser.getIdToken(refresh: false).then((value) => value).timeout(duration);
+    Map<String, String> customClaims = {'role' : 'user'};
+    idTokenResult.claims.addAll(customClaims);
     User user = new User(idTokenResult.token, firebaseUser.uid, firebaseUser.displayName, firebaseUser.email);
     storage.write(key: "token", value: idTokenResult.token);
     return user;
@@ -54,6 +56,8 @@ class AuthService {
         IdTokenResult idTokenResult;
         Duration duration = new Duration(hours: 1);
         idTokenResult = await firebaseUser.getIdToken(refresh: false).then((value) => value).timeout(duration);
+        Map<String, String> customClaims = {'role' : 'user'};
+        idTokenResult.claims.addAll(customClaims);
         print('User:  ' + firebaseUser.uid + firebaseUser.displayName + firebaseUser.email);
         user = new User(idTokenResult.token, firebaseUser.uid, firebaseUser.displayName, firebaseUser.email);
         return user;

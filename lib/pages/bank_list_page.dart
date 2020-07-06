@@ -59,7 +59,6 @@ class _BankListpageState extends State<BankListPage> {
             child: BankList(banks: vm.list))
         ])
       )
-   
     );
   }
 }

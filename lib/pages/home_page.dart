@@ -1,16 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:swd/pages/account_page.dart';
+
+import 'calculator_menu.dart';
 
 class HomePage extends StatefulWidget {
   @override
   State createState() => _HomePageSate();
 }
 class _HomePageSate extends State<HomePage> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
+  final List<Widget> _children = [
+    AccountPage(),
+    CalculatorMenuPage()
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 15,
         unselectedFontSize: 11,
@@ -19,14 +26,22 @@ class _HomePageSate extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             title: Text('Home'),
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.turned_in),
-            title: Text('Record'),
+            icon: Icon(Icons.account_box),
+            title: Text('Account'),
+            backgroundColor: Colors.blue,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.border_color),
+            title: Text('Caculator'),
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box),
             title: Text('User'),
+            backgroundColor: Colors.blue,
           )
         ],
         onTap: (index) {

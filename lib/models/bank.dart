@@ -18,8 +18,9 @@ class Bank {
 }
 
 class BankDetail {
+
   final String bankID;
-  final String bankname;
+  final String bankName;
   final String bankIcon;
   final Float loanRateSix;
   final Float loanRateTwelve;
@@ -30,7 +31,7 @@ class BankDetail {
 
   BankDetail(
     {
-      this.bankID, this.bankIcon, this.bankname,
+      this.bankID, this.bankIcon, this.bankName,
       this.loanRateSix, this.loanRateTwelve, this.loanRateTwentyFour,
       this.savingRateTwentyFour, this.savingRateSix, this.savingRateTwelve
     }
@@ -40,7 +41,7 @@ class BankDetail {
     return BankDetail(
       bankID: json['id'],
       bankIcon: json['bank_icon'],
-      bankname: json['name'],
+      bankName: json['name'],
       loanRateSix: json['loanRateSix'],
       loanRateTwelve: json['loanRateTwelve'],
       loanRateTwentyFour: json['loanRateTwentyFour'],
@@ -49,6 +50,5 @@ class BankDetail {
       savingRateTwentyFour: json['savingRateTwentyFour'],
     );
   }
-
 }
    

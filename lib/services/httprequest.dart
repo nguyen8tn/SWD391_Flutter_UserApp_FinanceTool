@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/bank.dart';
 import 'package:swd/models/user.dart';
 import 'dart:convert';
@@ -7,8 +8,10 @@ import 'package:http/io_client.dart';
 import 'package:swd/services/auth.dart';
 
 class HttpRequest {
+
   HttpClient _httpClient;
   IOClient _ioClient;
+  static SharedPreferences prefs;
 
   Future<String> getUserDetails(User user) async {
     String userDetail = "";
@@ -107,7 +110,7 @@ class HttpRequest {
     HttpClient httpClient = bypassSSL();
     //path
     Uri uri = Uri.https(
-        '192.168.1.5:45455', '/api/auth/login');
+        '10.0.2.2:5001', '/api/auth/login');
     //send request
     IOClient ioClient = new IOClient(httpClient);
     await ioClient
@@ -115,8 +118,12 @@ class HttpRequest {
       print("statuscode: "+ value.statusCode.toString());
       if(value.statusCode == 200) {
         userDetails = value.body;
+        final res = jsonDecode(value.body);
+        userDetails = res['jwtString'];
       }
     });
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString('apiToken', userDetails);
     return userDetails;
   }
 }

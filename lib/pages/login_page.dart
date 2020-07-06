@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swd/main.dart';
+import 'package:swd/pages/saving_account_page.dart';
 import 'package:swd/services/auth.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:toast/toast.dart';
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                 print('----------value2: ' + value);
                 if(value.isNotEmpty) {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return MainPage(appTitle: 'Messaging');
+                    return SavingAccountPage();
                   }));
                 } else {
                   Toast.show("Error at Http", context,duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
