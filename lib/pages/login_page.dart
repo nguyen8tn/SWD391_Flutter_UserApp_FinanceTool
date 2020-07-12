@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swd/main.dart';
+import 'package:swd/pages/home_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
 import 'package:swd/services/auth.dart';
 import 'package:swd/services/httprequest.dart';
@@ -38,30 +39,34 @@ class _LoginPageState extends State<LoginPage> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
-          AuthService().signInWithGoogle().then((value) {
-            if (value != null) {
-              print('----------value: ' + value.uid);
-              HttpRequest().login(value).then((value) {
-                print('----------value2: ' + value);
-                if(value.isNotEmpty) {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return SavingAccountPage();
-                  }));
-                } else {
-                  Toast.show("Error at Http", context,duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return LoginPage();
-                  }));
-                }
-              });
-            } else {
-              Toast.show("Error at Login", context,duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return LoginPage();
-              }));
-            }
-          });
-        },
+        AuthService().signInWithGoogle().then((value) {
+          if (value != null) {
+            print('----------value: ' + value.uid);
+            HttpRequest().login(value).then((value) {
+              print('----------value2: ' + value);
+              if (value.isNotEmpty) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return HomePage();
+                }));
+              } else {
+                Toast.show("Error at Http", context,
+                    duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return LoginPage();
+                }));
+              }
+            });
+          } else {
+            Toast.show("Error at Login", context,
+                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return LoginPage();
+            }));
+          }
+        });
+      },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
@@ -96,19 +101,23 @@ class _LoginPageState extends State<LoginPage> {
             print('----------value: ' + value.uid);
             HttpRequest().login(value).then((value) {
               print('----------value2: ' + value);
-              if(value.isNotEmpty) {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return MainPage(appTitle: 'Messaging');
+              if (value.isNotEmpty) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return HomePage();
                 }));
               } else {
-                Toast.show("Error at Http", context,duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                Toast.show("Error at Http", context,
+                    duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
                   return LoginPage();
                 }));
               }
             });
           } else {
-            Toast.show("Error at Login", context,duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+            Toast.show("Error at Login", context,
+                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return LoginPage();
             }));

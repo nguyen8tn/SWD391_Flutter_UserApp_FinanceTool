@@ -28,7 +28,11 @@ class _AccountPageState extends State<AccountPage> {
                 elevation: 3,
                 child: Align(
                   alignment: Alignment.center,
-                  child: Text('Total: ' + 1213.toString() + ' ('+list.length.toString()+' accounts)'),
+                  child: Text('Total: ' +
+                      1213.toString() +
+                      ' (' +
+                      list.length.toString() +
+                      ' accounts)'),
                 ),
               ),
             ),
@@ -38,8 +42,28 @@ class _AccountPageState extends State<AccountPage> {
         color: Colors.black12,
       ),
       Container(
-        color: Colors.black,
-      )
+        child: Column(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: 40,
+              child: Card(
+                elevation: 3,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text('Total: ' +
+                      1213.toString() +
+                      ' (' +
+                      list.length.toString() +
+                      ' accounts)'),
+                ),
+              ),
+            ),
+            _listUserSaving()
+          ],
+        ),
+        color: Colors.black12,
+      ),
     ];
     return listTab;
   }
@@ -133,7 +157,7 @@ class _AccountPageState extends State<AccountPage> {
                   Expanded(
                       flex: 2,
                       child: Container(
-                        color: Colors.red,
+                        color: Colors.white,
                         child: Stack(
                           fit: StackFit.loose,
                           children: [
@@ -145,7 +169,7 @@ class _AccountPageState extends State<AccountPage> {
                               child: Text(DateFormat('dd/MM/yyyy')
                                   .format(list[index].startDate)
                                   .toString()),
-                              alignment: Alignment.bottomRight,
+                              alignment: Alignment.topLeft,
                             )
                           ],
                         ),

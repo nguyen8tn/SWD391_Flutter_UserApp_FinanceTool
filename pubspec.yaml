@@ -36,6 +36,8 @@ dependencies:
   firebase_admin: ^0.1.2
   intl: ^0.16.1
   shared_preferences: ^0.5.7+3
+  flutter_svprogresshud: ^0.0.3
+  flutter_material_pickers: ^1.6.0
 
 
   # The following adds the Cupertino Icons font to your application.

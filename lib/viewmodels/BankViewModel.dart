@@ -1,11 +1,11 @@
 import 'package:swd/models/bank.dart';
 
 class BankViewModel {
-  final Bank bank;  
+  final Bank bank;
 
   BankViewModel({this.bank});
 
-  String get bankId {
+  int get bankId {
     return bank.bankID;
   }
 

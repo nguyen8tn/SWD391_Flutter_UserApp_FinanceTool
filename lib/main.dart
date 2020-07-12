@@ -17,11 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "DEMO LOGIN Google",
-      home: CalculatorMenuPage(),
+      home: HomePage(),
     );
   }
-
 }
+
 class MainPage extends StatelessWidget {
   final String appTitle;
   const MainPage({this.appTitle});
@@ -34,4 +34,3 @@ class MainPage extends StatelessWidget {
         body: MessagingWidget(),
       );
 }
-

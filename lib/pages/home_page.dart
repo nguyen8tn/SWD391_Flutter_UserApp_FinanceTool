@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd/pages/account_page.dart';
+import 'package:swd/pages/saving_account_page.dart';
 
 import 'calculator_menu.dart';
 
@@ -8,11 +9,12 @@ class HomePage extends StatefulWidget {
   @override
   State createState() => _HomePageSate();
 }
+
 class _HomePageSate extends State<HomePage> {
   int _currentIndex = 0;
   final List<Widget> _children = [
     AccountPage(),
-    CalculatorMenuPage()
+    SavingAccountPage(),
   ];
   @override
   Widget build(BuildContext context) {

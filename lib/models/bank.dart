@@ -1,25 +1,22 @@
 import 'dart:ffi';
 
 class Bank {
-  final String bankID;
+  final int bankID;
   final String bankName;
   final String bankIcon;
-  
-  Bank({this.bankID ,this.bankName, this.bankIcon});
+
+  Bank({this.bankID, this.bankName, this.bankIcon});
 
   factory Bank.fromJson(Map<String, dynamic> json) {
     return Bank(
-      bankID: json["id"],
-      bankIcon:  json['bank_icon'],
-      bankName: json['name']
-    );
+        bankID: json["id"],
+        bankIcon: json['bank_icon'],
+        bankName: json['name']);
   }
- 
 }
 
 class BankDetail {
-
-  final String bankID;
+  final int bankID;
   final String bankName;
   final String bankIcon;
   final Float loanRateSix;
@@ -30,12 +27,15 @@ class BankDetail {
   final Float savingRateTwentyFour;
 
   BankDetail(
-    {
-      this.bankID, this.bankIcon, this.bankName,
-      this.loanRateSix, this.loanRateTwelve, this.loanRateTwentyFour,
-      this.savingRateTwentyFour, this.savingRateSix, this.savingRateTwelve
-    }
-  );
+      {this.bankID,
+      this.bankIcon,
+      this.bankName,
+      this.loanRateSix,
+      this.loanRateTwelve,
+      this.loanRateTwentyFour,
+      this.savingRateTwentyFour,
+      this.savingRateSix,
+      this.savingRateTwelve});
 
   factory BankDetail.fromJson(Map<String, dynamic> json) {
     return BankDetail(
@@ -51,4 +51,3 @@ class BankDetail {
     );
   }
 }
-   

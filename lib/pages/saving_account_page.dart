@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:intl/intl.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/services/calculation_http_request.dart';
@@ -15,8 +16,23 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
   double _interestRate, _freeRate, _amount;
   DateTime _startDate;
   int _term, _calculateDate, _bankID;
+  List<String> bankNames = <String>[
+    'TP Bank',
+    'Vietcombank',
+    'Techcombank',
+    'VP Bank',
+  ];
+  String speed = 'Ludicrous';
+
+  List<Icon> bankIcons = <Icon>[
+    Icon(Icons.sort),
+    Icon(Icons.clear_all),
+    Icon(Icons.swap_calls),
+    Icon(Icons.select_all),
+  ];
 
   String title = "Create Saving Account";
+  TextEditingController _bankController = new TextEditingController();
   TextEditingController _accountController = new TextEditingController();
   TextEditingController _amountController = new TextEditingController();
   TextEditingController _startDateController = new TextEditingController();
@@ -45,10 +61,10 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
     }
   }
 
-  void saveData() {
+  void saveData() async {
     SavingAccount account = SavingAccount.sa(0, _bankID, "", _account, _amount,
         _startDate, _term, _interestRate, _freeRate, _calculateDate);
-    HttpRequestC().addSavingAccount(account);
+    await HttpRequestC().addSavingAccount(account);
   }
 
   _calculateEndDate(BuildContext context) async {}
@@ -107,10 +123,25 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                     ListTile(
                       leading: Icon(Icons.title),
                       title: TextField(
+                        readOnly: true,
+                        controller: _bankController,
                         decoration: InputDecoration(
                             hintText: 'Bank', border: InputBorder.none),
                       ),
-                      trailing: Icon(Icons.arrow_forward),
+                      trailing: InkResponse(
+                        child: Icon(Icons.arrow_forward),
+                        onTap: () {
+                          showMaterialSelectionPicker(
+                            context: context,
+                            title: "Bank Select",
+                            items: bankNames,
+                            selectedItem: speed,
+                            icons: bankIcons,
+                            onChanged: (value) =>
+                                setState(() => _bankController.text = value),
+                          );
+                        },
+                      ),
                     )
                   ],
                 ),
