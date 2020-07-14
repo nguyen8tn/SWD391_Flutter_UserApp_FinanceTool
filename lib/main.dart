@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:swd/pages/account_page.dart';
-import 'package:swd/pages/calculator_menu.dart';
-import 'package:swd/pages/home_page.dart';
-import 'package:swd/pages/login_page.dart';
-import 'package:swd/pages/saving_account_page.dart';
+import 'package:provider/provider.dart';
+import 'package:swd/pages/gross_net_page.dart';
+import 'viewmodels/GrossNetCalculationViewModel.dart';
 import 'package:swd/widgets/message_widget.dart';
 
 void main() {
@@ -16,8 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "DEMO LOGIN Google",
-      home: HomePage(),
+      title: "Financial Service",
+      home: ChangeNotifierProvider(
+        create: (context) => GrossNetCalculationViewModel(),
+        child: GrossNetConvertionPage(),
+      ),
     );
   }
 }

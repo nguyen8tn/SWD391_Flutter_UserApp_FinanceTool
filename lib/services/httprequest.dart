@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/bank.dart';
+import 'package:swd/models/caculation.dart';
 import 'package:swd/models/user.dart';
 import 'dart:convert';
 import 'package:http/io_client.dart';
@@ -15,8 +16,8 @@ class HttpRequest {
   Future<String> getUserDetails(User user) async {
     String userDetail = "";
     //var queryParameters = {'id': user.uid};
-    Uri uri = Uri.https('http://financial-web-service.azurewebsites.net/',
-        '/api/users/details');
+    Uri uri = Uri.https(
+        'financial-web-service.azurewebsites.net/', '/api/users/details');
     String _url = "";
     print(Uri.decodeFull(uri.path));
     HttpClient httpClient = bypassSSL();
@@ -57,8 +58,8 @@ class HttpRequest {
   Future<List<Bank>> fetchBanks(String keyword) async {
     List<Bank> result;
     var queryParameters = {'MinDate': 'one', 'Page': '1', 'Limit': '10'};
-    var uri = Uri.https('http://financial-web-service.azurewebsites.net',
-        '/api/banks', queryParameters);
+    var uri = Uri.https('financial-web-service.azurewebsites.net', '/api/banks',
+        queryParameters);
 
     print(Uri.decodeFull(uri.path));
     _httpClient = bypassSSL();
@@ -108,8 +109,8 @@ class HttpRequest {
     //ssl
     HttpClient httpClient = bypassSSL();
     //path
-    Uri uri = Uri.https(
-        'http://financial-web-service.azurewebsites.net', '/api/auth/login');
+    Uri uri =
+        Uri.https('financial-web-service.azurewebsites.net', '/api/auth/login');
     //send request
     IOClient ioClient = new IOClient(httpClient);
     await ioClient
@@ -124,6 +125,7 @@ class HttpRequest {
     });
     prefs = await SharedPreferences.getInstance();
     prefs.setString('apiToken', userDetails);
+    prefs.setString('uid', user.uid);
     return userDetails;
   }
 
@@ -131,7 +133,7 @@ class HttpRequest {
     BankDetail result;
 
     var uri = Uri.https(
-      'http://financial-web-service.azurewebsites.net',
+      'financial-web-service.azurewebsites.net',
       '/api/banks/' + keyword,
     );
 
@@ -144,6 +146,30 @@ class HttpRequest {
       if (value.statusCode == 200) {
         final body = jsonDecode(value.body);
         result = BankDetail.fromJson(body);
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  Future<List<BaseFormula>> getBaseFormula() async {
+    List<BaseFormula> result;
+    var uri = Uri.https('financial-web-service.azurewebsites.net',
+        '/api/caculation/get-all-base-formula');
+
+    print(Uri.decodeFull(uri.path));
+    _httpClient = bypassSSL();
+    IOClient ioClient = new IOClient(_httpClient);
+    await ioClient.get(uri).then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final body = jsonDecode(value.body);
+        final Iterable json = body;
+        result = json.map((e) => BaseFormula.fromJson(e)).toList();
       }
     }).catchError((e) {
       print(e.toString());

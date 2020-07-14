@@ -13,8 +13,8 @@ class HttpRequestC {
   Future<List<BaseFormula>> getAllBaseFormula() async {
     List<BaseFormula> result;
     _httpClient = HttpRequest().bypassSSL();
-    Uri uri = Uri.https(
-        'http://financial-web-service.azurewebsites.net', '/api/auth/login');
+    Uri uri =
+        Uri.https('financial-web-service.azurewebsites.net', '/api/auth/login');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.get(uri).then((value) {
       print("statuscode: " + value.statusCode.toString());
@@ -39,7 +39,7 @@ class HttpRequestC {
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https('http://financial-web-service.azurewebsites.net',
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/add-saving-account');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.post(uri, headers: headers).then((value) {
@@ -60,7 +60,7 @@ class HttpRequestC {
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https('http://financial-web-service.azurewebsites.net',
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/delete-saving-account');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.delete(uri, headers: headers).then((value) {
@@ -78,10 +78,10 @@ class HttpRequestC {
     }
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      'Accept': 'applica tion/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https('http://financial-web-service.azurewebsites.net',
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/update-saving-account');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.delete(uri, headers: headers).then((value) {
@@ -103,7 +103,7 @@ class HttpRequestC {
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https('http://financial-web-service.azurewebsites.net',
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/add-loan-account');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.post(uri, headers: headers).then((value) {

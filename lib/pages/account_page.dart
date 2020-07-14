@@ -11,9 +11,9 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   int money = 123;
   List<SavingAccount> list = [
-    SavingAccount.smp("BT", 0.01, DateTime.now(), 5000),
-    SavingAccount.smp("GT", 0.01, DateTime.now(), 5000),
-    SavingAccount.smp("RT", 0.01, DateTime.now(), 5000),
+    SavingAccount.smp("TPBANK", 0.063, DateTime.now(), 1234),
+    SavingAccount.smp("TPBANK", 0.067, DateTime.now(), 5000),
+    SavingAccount.smp("Vietcombank", 0.023, DateTime.now(), 7500),
   ];
 
   List<Widget> getListTab() {
@@ -137,7 +137,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             Text(
                               (list[index].interestRate * 100).toString(),
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.green),
                             )
                           ],
                         ),
