@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/bank.dart';
 import 'package:swd/models/caculation.dart';
+import 'package:swd/models/operant.dart';
 import 'package:swd/models/user.dart';
 import 'dart:convert';
 import 'package:http/io_client.dart';
@@ -170,6 +171,32 @@ class HttpRequest {
         final body = jsonDecode(value.body);
         final Iterable json = body;
         result = json.map((e) => BaseFormula.fromJson(e)).toList();
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  Future<List<Operant>> getListOperantByID(int id) async {
+    List<Operant> result;
+    var uri = Uri.https(
+        'financial-web-service.azurewebsites.net',
+        '/api/caculation/push-user-input-operand-by-base-formula' +
+            id.toString());
+
+    print(Uri.decodeFull(uri.path));
+    _httpClient = bypassSSL();
+    IOClient ioClient = new IOClient(_httpClient);
+    await ioClient.get(uri).then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final body = jsonDecode(value.body);
+        final Iterable json = body;
+        result = json.map((e) => Operant.fromJson(e)).toList();
       }
     }).catchError((e) {
       print(e.toString());
