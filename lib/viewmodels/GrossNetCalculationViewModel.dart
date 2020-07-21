@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:swd/models/caculation.dart';
+import 'package:swd/models/Caculation.dart';
 import 'package:swd/services/httprequest.dart';
 
 class GrossNetCalculationViewModel extends ChangeNotifier {

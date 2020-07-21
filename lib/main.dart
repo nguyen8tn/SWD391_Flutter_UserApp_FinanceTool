@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:swd/pages/gross_net_page.dart';
+import 'package:swd/pages/login_page.dart';
 import 'viewmodels/GrossNetCalculationViewModel.dart';
 import 'package:swd/widgets/message_widget.dart';
 
@@ -15,10 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Financial Service",
-      home: ChangeNotifierProvider(
-        create: (context) => GrossNetCalculationViewModel(),
-        child: GrossNetConvertionPage(),
-      ),
+      home: LoginPage(),
     );
   }
 }

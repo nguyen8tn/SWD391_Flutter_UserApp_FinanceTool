@@ -5,6 +5,7 @@ import 'package:swd/pages/saving_account_page.dart';
 import 'package:swd/services/auth.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:toast/toast.dart';
+import 'package:swd/models/User.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         AuthService().signInWithGoogle().then((value) {
           if (value != null) {
-            print('----------value: ' + value.uid);
+            print('----------value: ' + value.id);
             HttpRequest().login(value).then((value) {
               print('----------value2: ' + value);
               if (value.isNotEmpty) {
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                   return HomePage();
                 }));
               } else {
-                Toast.show("Error at Http", context,
+                Toast.show("Không thể đăng nhập", context,
                     duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
@@ -98,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         AuthService().signInWithFacebook().then((value) {
           if (value != null) {
-            print('----------value: ' + value.uid);
+            print('----------value: ' + value.id);
             HttpRequest().login(value).then((value) {
               print('----------value2: ' + value);
               if (value.isNotEmpty) {

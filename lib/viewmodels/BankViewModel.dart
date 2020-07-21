@@ -1,4 +1,4 @@
-import 'package:swd/models/bank.dart';
+import 'package:swd/models/Bank.dart';
 
 class BankViewModel {
   final Bank bank;

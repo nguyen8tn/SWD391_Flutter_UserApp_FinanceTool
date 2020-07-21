@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd/models/caculation.dart';
+import 'package:swd/models/Caculation.dart';
 
 class CalculatorMenuPage extends StatefulWidget {
   @override
@@ -21,13 +21,19 @@ class _CalculatorMenuPageState extends State<CalculatorMenuPage> {
         ),
       ),
       body: Container(
-        child: Column(
-          children: [
-            ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return optionBtn(index);
-                })
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.all(15),
+              sliver: SliverGrid.count(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: List.generate(items.length, (index) {
+                  return formulaItem(index);
+                }),
+              ),
+            )
           ],
         ),
       ),
@@ -38,5 +44,16 @@ class _CalculatorMenuPageState extends State<CalculatorMenuPage> {
     return OutlineButton(
         //onPressed: ,
         child: Text(items[index].formula));
+  }
+
+  Widget formulaItem(int index) {
+    return Container(
+      child: Column(
+        children: [
+            Icon(Icons.account_balance_wallet),
+            Text(items[index].name)
+        ],
+      ),
+    );
   }
 }

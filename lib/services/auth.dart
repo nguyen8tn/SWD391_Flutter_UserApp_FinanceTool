@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:swd/models/user.dart';
+import 'package:swd/models/User.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AuthService {
@@ -9,6 +9,7 @@ class AuthService {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final FacebookLogin facebookLogin = FacebookLogin();
   final storage = new FlutterSecureStorage();
+
   Future<User> signInWithGoogle() async {
     signOutGoogle();
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
