@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^0.5.7+3
   flutter_svprogresshud: ^0.0.3
   flutter_material_pickers: ^1.6.0
+  flutter_progress_hud: ^1.0.2
 
 
   # The following adds the Cupertino Icons font to your application.

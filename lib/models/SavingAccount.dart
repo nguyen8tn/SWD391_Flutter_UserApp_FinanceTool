@@ -30,7 +30,8 @@ class SavingAccount {
     this.amount = amount;
   }
 
-  SavingAccount.sa(this.id,
+  SavingAccount.sa(
+      this.id,
       this.bankID,
       this.uid,
       this.name,
@@ -56,4 +57,16 @@ class SavingAccount {
         freeInterestRate: json['freeInterestRate'],
         calculationDay: json['calculationDay']);
   }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'uid': uid,
+        'bankID': bankID,
+        'name': name,
+        'amount': amount,
+        'startDate': startDate,
+        'term': term,
+        'interestRate': interestRate,
+        'freeInterestRate': freeInterestRate,
+        'calculationDay': calculationDay
+      };
 }

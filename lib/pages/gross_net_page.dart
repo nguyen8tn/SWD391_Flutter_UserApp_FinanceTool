@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:swd/viewmodels/GrossNetCalculationViewModel.dart';
+import 'package:swd/viewmodels/CalculationViewModel.dart';
 
 class GrossNetConvertionPage extends StatefulWidget {
   @override
@@ -11,8 +11,7 @@ class GrossNetConvertionPage extends StatefulWidget {
 class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
   @override
   Widget build(BuildContext context) {
-    final vm =
-        Provider.of<GrossNetCalculationViewModel>(context, listen: false);
+    final vm = Provider.of<CalculationViewModel>(context, listen: false);
 
     List<TextEditingController> _controllers = new List();
     TextEditingController txtResult = TextEditingController();
@@ -22,17 +21,17 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
         centerTitle: true,
       ),
       body: FutureBuilder<bool>(
-        future: vm.getAllFormulas(),
+        future: vm.getAllOperantByFormulaID(1),
         builder: (context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData) {
-            var title = vm.baseFormulas.first.formula.split("-");
+            //var title = vm.baseFormulas.first.formula.split("-");
             return Padding(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    child: getListTiles(_controllers, []),
+                    child: getListTiles(_controllers, vm),
                     flex: 8,
                   ),
                   Expanded(
@@ -85,9 +84,9 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
   }
 
   Widget getListTiles(
-      List<TextEditingController> _controllers, List<String> titles) {
+      List<TextEditingController> _controllers, CalculationViewModel vm) {
     return ListView.builder(
-      itemCount: 5,
+      itemCount: vm.operants.length,
       itemBuilder: (context, index) {
         _controllers.add(new TextEditingController());
         if (index == 0) {
@@ -96,30 +95,32 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
               //leading: Icon(Icons.monetization_on),
               title: Row(
                 children: <Widget>[
-                  Expanded(flex: 2, child: Text("Salary: ")),
+                  Expanded(flex: 2, child: Text("Lương: ")),
                   Expanded(
                     flex: 8,
                     child: TextField(
                       controller: _controllers[index],
+                      decoration: InputDecoration(hintText: 'Lương Trước Thuế'),
                       textAlign: TextAlign.right,
                     ),
                   ),
                 ],
               ),
-              trailing: Text("VND"),
+              trailing: Text("VNĐ"),
             ),
           );
         } else {
           return Card(
             child: ListTile(
+              leading: Icon(Icons.mode_edit),
               //leading: Icon(Icons.monetization_on),
               title: Row(
                 children: <Widget>[
-                  Expanded(flex: 2, child: Text("Salary: ")),
                   Expanded(
-                    flex: 8,
                     child: TextField(
                       controller: _controllers[index],
+                      decoration: InputDecoration(
+                          hintText: vm.operants.elementAt(index).desc),
                       textAlign: TextAlign.right,
                     ),
                   ),

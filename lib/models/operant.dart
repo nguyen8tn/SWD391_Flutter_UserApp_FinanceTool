@@ -18,11 +18,11 @@ class Operant {
 
   factory Operant.fromJson(Map<String, dynamic> json) {
     return Operant(
-        id: json["id"],
+        id: json["id"].toString(),
         name: json['name'],
         value: json['value'],
         baseFormula: json['baseFormulaID'],
-        desc: json['desc'],
+        desc: json['description'],
         sequence: json['sequence'],
         type: json['type']);
   }
@@ -32,7 +32,7 @@ class Operant {
         'name': name,
         'value': value,
         'baseFormulaID': baseFormula,
-        'desc': desc,
+        'description': desc,
         'sequence': sequence,
         'type': type
       };

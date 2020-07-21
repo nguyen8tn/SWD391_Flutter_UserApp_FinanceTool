@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/models/bank.dart';
 import 'package:swd/models/caculation.dart';
 import 'package:swd/models/operant.dart';
@@ -13,6 +14,7 @@ class HttpRequest {
   HttpClient _httpClient;
   IOClient _ioClient;
   static SharedPreferences prefs;
+  final prefix = 'financial-web-service.azurewebsites.net';
 
   Future<String> getUserDetails(User user) async {
     String userDetail = "";
@@ -161,7 +163,7 @@ class HttpRequest {
     var uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/caculation/get-all-base-formula');
 
-    print(Uri.decodeFull(uri.path));
+    print(uri);
     _httpClient = bypassSSL();
     IOClient ioClient = new IOClient(_httpClient);
     await ioClient.get(uri).then((value) {
@@ -183,11 +185,11 @@ class HttpRequest {
   Future<List<Operant>> getListOperantByID(int id) async {
     List<Operant> result;
     var uri = Uri.https(
-        'financial-web-service.azurewebsites.net',
-        '/api/caculation/push-user-input-operand-by-base-formula' +
+        prefix,
+        '/api/caculation/push-user-input-operand-by-base-formula/' +
             id.toString());
 
-    print(Uri.decodeFull(uri.path));
+    print(uri);
     _httpClient = bypassSSL();
     IOClient ioClient = new IOClient(_httpClient);
     await ioClient.get(uri).then((value) {
@@ -197,6 +199,63 @@ class HttpRequest {
         final body = jsonDecode(value.body);
         final Iterable json = body;
         result = json.map((e) => Operant.fromJson(e)).toList();
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  //Saving Accounts
+  Future<List<SavingAccount>> getListSavingAccount(int id) async {
+    List<SavingAccount> result;
+    var uri = Uri.https(
+        prefix, '/api/transactions/get-saving-accounts/' + id.toString());
+
+    print(uri);
+    _httpClient = bypassSSL();
+    IOClient ioClient = new IOClient(_httpClient);
+    await ioClient.get(uri).then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final body = jsonDecode(value.body);
+        final Iterable json = body;
+        result = json.map((e) => SavingAccount.fromJson(e)).toList();
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  Future<SavingAccount> addSavingAccount(
+      SavingAccount savingAccount, String token) async {
+    SavingAccount result;
+    Uri uri = Uri.https(prefix, '/api/transactions/add-saving-account/');
+    String _url = "";
+    print(Uri.decodeFull(uri.path));
+    HttpClient httpClient = bypassSSL();
+    //send request
+    IOClient ioClient = new IOClient(httpClient);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+    };
+    await ioClient
+        .post(uri, headers: headers, body: json.encode(savingAccount.toJson()))
+        .then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final json = jsonDecode(value.body);
+
+        result = SavingAccount.fromJson(json);
       }
     }).catchError((e) {
       print(e.toString());
