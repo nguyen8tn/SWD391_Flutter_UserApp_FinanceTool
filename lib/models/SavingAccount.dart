@@ -22,8 +22,7 @@ class SavingAccount {
       this.freeInterestRate,
       this.calculationDay});
 
-  SavingAccount.smp(
-      String name, double interestRate, DateTime startDate, double amount) {
+  SavingAccount.smp(String name, double interestRate, DateTime startDate, double amount) {
     this.name = name;
     this.interestRate = interestRate;
     this.startDate = startDate;

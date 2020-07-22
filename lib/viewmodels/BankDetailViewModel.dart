@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:swd/models/bank.dart';
+import 'package:swd/models/Bank.dart';
 
 class BankDetailViewModel {
   final BankDetail bank;

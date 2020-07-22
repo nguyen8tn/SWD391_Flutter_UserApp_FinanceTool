@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:swd/models/SavingAccount.dart';
-import 'package:swd/models/bank.dart';
-import 'package:swd/models/caculation.dart';
-import 'package:swd/models/operant.dart';
-import 'package:swd/models/user.dart';
+
+import 'package:swd/models/Bank.dart';
+import 'package:swd/models/Caculation.dart';
+import 'package:swd/models/Operand.dart';
+import 'package:swd/models/User.dart';
 import 'dart:convert';
 import 'package:http/io_client.dart';
 import 'package:swd/services/auth.dart';
@@ -128,7 +130,7 @@ class HttpRequest {
     });
     prefs = await SharedPreferences.getInstance();
     prefs.setString('apiToken', userDetails);
-    prefs.setString('uid', user.uid);
+    prefs.setString('uid', user.id);
     return userDetails;
   }
 
@@ -182,8 +184,8 @@ class HttpRequest {
     return result;
   }
 
-  Future<List<Operant>> getListOperantByID(int id) async {
-    List<Operant> result;
+  Future<List<Operand>> getListOperantByID(int id) async {
+    List<Operand> result;
     var uri = Uri.https(
         prefix,
         '/api/caculation/push-user-input-operand-by-base-formula/' +
@@ -198,7 +200,7 @@ class HttpRequest {
       if (value.statusCode == 200) {
         final body = jsonDecode(value.body);
         final Iterable json = body;
-        result = json.map((e) => Operant.fromJson(e)).toList();
+        result = json.map((e) => Operand.fromJson(e)).toList();
       }
     }).catchError((e) {
       print(e.toString());

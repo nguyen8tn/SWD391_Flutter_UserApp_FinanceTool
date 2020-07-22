@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:swd/models/caculation.dart';
-import 'package:swd/models/operant.dart';
+
+import 'package:swd/models/Operand.dart';
+
+import 'package:swd/models/Caculation.dart';
 import 'package:swd/services/httprequest.dart';
 
 class CalculationViewModel extends ChangeNotifier {
   List<BaseFormula> baseFormulas;
-  List<Operant> operants;
+  List<Operand> operants;
 
   Future<bool> getAllFormulas() async {
     final result = await HttpRequest().getBaseFormula();

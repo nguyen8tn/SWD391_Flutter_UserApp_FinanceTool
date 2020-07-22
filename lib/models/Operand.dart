@@ -1,4 +1,4 @@
-class Operant {
+class Operand {
   final String id;
   final String name;
   final double value;
@@ -7,7 +7,7 @@ class Operant {
   final int sequence;
   final int baseFormula;
 
-  Operant(
+  Operand(
       {this.baseFormula,
       this.desc,
       this.id,
@@ -16,8 +16,8 @@ class Operant {
       this.type,
       this.value});
 
-  factory Operant.fromJson(Map<String, dynamic> json) {
-    return Operant(
+  factory Operand.fromJson(Map<String, dynamic> json) {
+    return Operand(
         id: json["id"].toString(),
         name: json['name'],
         value: json['value'],
