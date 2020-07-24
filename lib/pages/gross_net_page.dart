@@ -12,7 +12,7 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
   @override
   Widget build(BuildContext context) {
     final vm = Provider.of<CalculationViewModel>(context, listen: false);
-
+    bool hasData = false;
     List<TextEditingController> _controllers = new List();
     TextEditingController txtResult = TextEditingController();
     return Scaffold(
@@ -32,10 +32,8 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                 children: <Widget>[
                   Expanded(
                     child: getListTiles(_controllers, vm),
-                    flex: 8,
                   ),
                   Expanded(
-                    flex: 3,
                     child: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
@@ -44,9 +42,11 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                               Expanded(flex: 2, child: Text("Salary: ")),
                               Expanded(
                                 flex: 8,
-                                child: TextField(
-                                  controller: txtResult,
-                                  textAlign: TextAlign.right,
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    controller: txtResult,
+                                    textAlign: TextAlign.right,
+                                  ),
                                 ),
                               ),
                               Text("VND")
@@ -58,8 +58,8 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                           RaisedButton(
                               onPressed: () {},
                               child: Container(
-                                width: 200,
-                                height: 48,
+                                width: 100,
+                                height: 20,
                                 child: Center(
                                     child: Text(
                                   "Submit",
@@ -70,6 +70,13 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                       ),
                     ),
                   ),
+                  hasData == true
+                      ? Expanded(
+                          child: DataTable(
+                            columns: [DataColumn(label: Text('asd'))],
+                          ),
+                        )
+                      : Container()
                 ],
               ),
             );
@@ -92,12 +99,11 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
         if (index == 0) {
           return Card(
             child: ListTile(
-              //leading: Icon(Icons.monetization_on),
+              leading: Icon(Icons.monetization_on),
               title: Row(
                 children: <Widget>[
-                  Expanded(flex: 2, child: Text("Lương: ")),
+                  ///Expanded(flex: 2, child: Text("Lương: ")),
                   Expanded(
-                    flex: 8,
                     child: TextField(
                       controller: _controllers[index],
                       decoration: InputDecoration(hintText: 'Lương Trước Thuế'),
@@ -120,7 +126,8 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                     child: TextField(
                       controller: _controllers[index],
                       decoration: InputDecoration(
-                          hintText: vm.operants.elementAt(index).desc),
+                          hintText:
+                              vm.operants.elementAt(index).desc + ' ( % )'),
                       textAlign: TextAlign.right,
                     ),
                   ),

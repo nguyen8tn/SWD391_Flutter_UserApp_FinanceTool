@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/main.dart';
 import 'package:swd/pages/home_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
@@ -39,12 +40,16 @@ class _LoginPageState extends State<LoginPage> {
   Widget _signInButton() {
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: () {
-        AuthService().signInWithGoogle().then((value) {
+      onPressed: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await AuthService().signInWithGoogle().then((value) async {
           if (value != null) {
             print('----------value: ' + value.id);
-            HttpRequest().login(value).then((value) {
+            prefs.setString('UID', value.id);
+            print(prefs.getString('UID'));
+            await HttpRequest().login(value).then((value) {
               print('----------value2: ' + value);
+              prefs.setString('Token', value);
               if (value.isNotEmpty) {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
@@ -97,11 +102,14 @@ class _LoginPageState extends State<LoginPage> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () {
-        AuthService().signInWithFacebook().then((value) {
+        AuthService().signInWithFacebook().then((value) async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
           if (value != null) {
             print('----------value: ' + value.id);
+            prefs.setString('Token', value.id);
             HttpRequest().login(value).then((value) {
               print('----------value2: ' + value);
+              prefs.setString('Token', value);
               if (value.isNotEmpty) {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {

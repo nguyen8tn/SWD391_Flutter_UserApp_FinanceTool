@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:swd/pages/account_page.dart';
 import 'package:swd/pages/gross_net_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
+import 'package:swd/viewmodels/AddSavingAccountViewModel.dart';
 import 'package:swd/viewmodels/CalculationViewModel.dart';
 
 import 'calculator_menu.dart';
@@ -18,7 +19,10 @@ class _HomePageSate extends State<HomePage> {
 
   final List<Widget> _children = [
     AccountPage(),
-    SavingAccountPage(),
+    ChangeNotifierProvider(
+      create: (context) => AddSavingAccountViewModel(),
+      child: SavingAccountPage(),
+    ),
     ChangeNotifierProvider(
       create: (context) => CalculationViewModel(),
       child: GrossNetConvertionPage(),

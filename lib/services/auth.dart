@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:swd/models/User.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -30,10 +31,14 @@ class AuthService {
     assert(firebaseUser.uid == currentUser.uid);
     IdTokenResult idTokenResult;
     Duration duration = new Duration(hours: 1);
-    idTokenResult = await firebaseUser.getIdToken(refresh: false).then((value) => value).timeout(duration);
-    Map<String, String> customClaims = {'role' : 'user'};
+    idTokenResult = await firebaseUser
+        .getIdToken(refresh: false)
+        .then((value) => value)
+        .timeout(duration);
+    Map<String, String> customClaims = {'role': 'user'};
     idTokenResult.claims.addAll(customClaims);
-    User user = new User(idTokenResult.token, firebaseUser.uid, firebaseUser.displayName, firebaseUser.email);
+    User user = new User(idTokenResult.token, firebaseUser.uid,
+        firebaseUser.displayName, firebaseUser.email);
     storage.write(key: "token", value: idTokenResult.token);
     return user;
   }
@@ -50,17 +55,25 @@ class AuthService {
     switch (loginResult.status) {
       case FacebookLoginStatus.loggedIn:
         FacebookAccessToken accessToken = loginResult.accessToken;
-        final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: accessToken.token );
+        final AuthCredential credential =
+            FacebookAuthProvider.getCredential(accessToken: accessToken.token);
         FirebaseUser firebaseUser;
         AuthResult ar = await _auth.signInWithCredential(credential);
         firebaseUser = ar.user;
         IdTokenResult idTokenResult;
         Duration duration = new Duration(hours: 1);
-        idTokenResult = await firebaseUser.getIdToken(refresh: false).then((value) => value).timeout(duration);
-        Map<String, String> customClaims = {'role' : 'user'};
+        idTokenResult = await firebaseUser
+            .getIdToken(refresh: false)
+            .then((value) => value)
+            .timeout(duration);
+        Map<String, String> customClaims = {'role': 'user'};
         idTokenResult.claims.addAll(customClaims);
-        print('User:  ' + firebaseUser.uid + firebaseUser.displayName + firebaseUser.email);
-        user = new User(idTokenResult.token, firebaseUser.uid, firebaseUser.displayName, firebaseUser.email);
+        print('User:  ' +
+            firebaseUser.uid +
+            firebaseUser.displayName +
+            firebaseUser.email);
+        user = new User(idTokenResult.token, firebaseUser.uid,
+            firebaseUser.displayName, firebaseUser.email);
         return user;
         break;
       case FacebookLoginStatus.cancelledByUser:

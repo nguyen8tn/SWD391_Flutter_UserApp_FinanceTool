@@ -59,12 +59,13 @@ class HttpRequest {
     //print(responseJson.toString());
     //return User.fromJson(responseJson);
   }
+  //Bank
 
-  Future<List<Bank>> fetchBanks(String keyword) async {
+  Future<List<Bank>> fetchBanks() async {
     List<Bank> result;
-    var queryParameters = {'MinDate': 'one', 'Page': '1', 'Limit': '10'};
-    var uri = Uri.https('financial-web-service.azurewebsites.net', '/api/banks',
-        queryParameters);
+    var queryParameters = {'MinDate': 'one', 'Page': '1', 'Limit': '100'};
+    var uri =
+        Uri.https('financial-web-service.azurewebsites.net', '/api/banks');
 
     print(Uri.decodeFull(uri.path));
     _httpClient = bypassSSL();
@@ -74,10 +75,8 @@ class HttpRequest {
       print(value.statusCode);
       if (value.statusCode == 200) {
         final body = jsonDecode(value.body);
-        final Iterable json = body[""];
-        result = json.map((bank) => Bank.fromJson(bank)).toList();
-        result.removeWhere(
-            (element) => !element.bankName.contains(keyword.toUpperCase()));
+        final Iterable json = body;
+        result = json.map((e) => Bank.fromJson(e)).toList();
       }
     }).catchError((e) {
       print(e.toString());
