@@ -19,27 +19,27 @@ class BankDetailViewModel {
     return bank.bankIcon;
   }
 
-  Float get loanRateSix {
+  double get loanRateSix {
     return bank.loanRateSix;
   }
 
-  Float get loanRateTwelve {
+  double get loanRateTwelve {
     return bank.loanRateTwelve;
   }
 
-  Float get loanRateTwentyFour {
+  double get loanRateTwentyFour {
     return bank.loanRateTwentyFour;
   }
 
-  Float get savingRateSix {
+  double get savingRateSix {
     return bank.savingRateSix;
   }
 
-  Float get savingRateTwelve {
+  double get savingRateTwelve {
     return bank.savingRateTwelve;
   }
 
-  Float get savingRateTwentyFour {
+  double get savingRateTwentyFour {
     return bank.savingRateTwentyFour;
   }
 }

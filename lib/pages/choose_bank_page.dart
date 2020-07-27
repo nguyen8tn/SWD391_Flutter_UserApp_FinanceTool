@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,16 +16,14 @@ class _ChooseBankState extends State<ChooseBank> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<BankListViewModel>(context, listen: false).fetchBanks('bank');
+    //Provider.of<BankListViewModel>(context, listen: false).fetchBanks('bank');
   }
+
   @override
   Widget build(BuildContext context) {
-
     final vm = Provider.of<BankListViewModel>(context);
     return Scaffold(
-        appBar: AppBar(
-            title: Text("Banks")
-        ),
+        appBar: AppBar(title: Text("Banks")),
         body: Container(
             padding: EdgeInsets.all(10),
             width: MediaQuery.of(context).size.width,
@@ -36,13 +33,12 @@ class _ChooseBankState extends State<ChooseBank> {
                 padding: EdgeInsets.only(left: 10),
                 decoration: BoxDecoration(
                     color: Colors.grey,
-                    borderRadius: BorderRadius.circular(10)
-                ),
+                    borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   controller: _controller,
                   onSubmitted: (value) {
-                    if(value.isNotEmpty) {
-                      vm.fetchBanks(value);
+                    if (value.isNotEmpty) {
+                      //vm.fetchBanks(value);
                       _controller.clear();
                     }
                   },
@@ -50,16 +46,10 @@ class _ChooseBankState extends State<ChooseBank> {
                   decoration: InputDecoration(
                       hintText: "Search",
                       hintStyle: TextStyle(color: Colors.white),
-                      border: InputBorder.none
-                  ),
-
+                      border: InputBorder.none),
                 ),
               ),
-              Expanded(
-                  child: BankList(banks: vm.list))
-            ])
-        )
-    );
+              Expanded(child: BankList(banks: vm.list))
+            ])));
   }
 }
-

@@ -19,12 +19,12 @@ class BankDetail {
   final int bankID;
   final String bankName;
   final String bankIcon;
-  final Float loanRateSix;
-  final Float loanRateTwelve;
-  final Float loanRateTwentyFour;
-  final Float savingRateSix;
-  final Float savingRateTwelve;
-  final Float savingRateTwentyFour;
+  final double loanRateSix;
+  final double loanRateTwelve;
+  final double loanRateTwentyFour;
+  final double savingRateSix;
+  final double savingRateTwelve;
+  final double savingRateTwentyFour;
 
   BankDetail(
       {this.bankID,

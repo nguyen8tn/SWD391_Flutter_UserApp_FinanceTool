@@ -32,7 +32,7 @@ class HttpRequestC {
     SavingAccount result;
     _httpClient = HttpRequest().bypassSSL();
     if (HttpRequest.prefs != null) {
-      print('asdasdsa' + HttpRequest.prefs.getString("apiToken"));
+      print('Token: ' + HttpRequest.prefs.getString("apiToken"));
     }
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -42,11 +42,17 @@ class HttpRequestC {
     Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/add-saving-account');
     _ioClient = new IOClient(_httpClient);
-    await _ioClient.post(uri, headers: headers).then((value) {
+    await _ioClient
+        .post(uri, headers: headers, body: json.encode(account.toJson()))
+        .then((value) {
+      print('respone: ' + value.body);
+      print('status code: ' + value.statusCode.toString());
       if (value.statusCode == 200) {
         final body = jsonDecode(value.body);
-        final Iterable json = body["values"];
+        return SavingAccount.fromJson(body);
       }
+    }).catchError((error) {
+      print(error.toString());
     });
   }
 
@@ -113,6 +119,4 @@ class HttpRequestC {
       }
     });
   }
-
-
 }

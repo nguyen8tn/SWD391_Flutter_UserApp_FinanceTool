@@ -1,4 +1,4 @@
-class SavingAccount {
+class LoanAccount {
   int id;
   int bankID;
   String uid;
@@ -10,7 +10,7 @@ class SavingAccount {
   double freeInterestRate;
   int calculationDay;
 
-  SavingAccount(
+  LoanAccount(
       {this.id,
       this.bankID,
       this.uid,
@@ -22,7 +22,7 @@ class SavingAccount {
       this.freeInterestRate,
       this.calculationDay});
 
-  SavingAccount.smp(
+  LoanAccount.smp(
       String name, double interestRate, DateTime startDate, double amount) {
     this.name = name;
     this.interestRate = interestRate;
@@ -30,7 +30,7 @@ class SavingAccount {
     this.amount = amount;
   }
 
-  SavingAccount.sa(
+  LoanAccount.sa(
       this.id,
       this.bankID,
       this.uid,
@@ -42,10 +42,10 @@ class SavingAccount {
       this.freeInterestRate,
       this.calculationDay);
 
-  SavingAccount.ms();
+  LoanAccount.ms();
 
-  factory SavingAccount.fromJson(Map<String, dynamic> json) {
-    return SavingAccount(
+  factory LoanAccount.fromJson(Map<String, dynamic> json) {
+    return LoanAccount(
         id: json['id'],
         bankID: json['bankID'],
         uid: json['uid'],

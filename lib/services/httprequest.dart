@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swd/models/LoanAccount.dart';
 
 import 'package:swd/models/SavingAccount.dart';
 
@@ -61,11 +62,11 @@ class HttpRequest {
   }
   //Bank
 
-  Future<List<Bank>> fetchBanks() async {
-    List<Bank> result;
+  Future<List<BankDetail>> fetchBanks() async {
+    List<BankDetail> result;
     var queryParameters = {'MinDate': 'one', 'Page': '1', 'Limit': '100'};
-    var uri =
-        Uri.https('financial-web-service.azurewebsites.net', '/api/banks');
+    var uri = Uri.https(
+        'financial-web-service.azurewebsites.net', '/api/banks/get-bank');
 
     print(Uri.decodeFull(uri.path));
     _httpClient = bypassSSL();
@@ -76,7 +77,7 @@ class HttpRequest {
       if (value.statusCode == 200) {
         final body = jsonDecode(value.body);
         final Iterable json = body;
-        result = json.map((e) => Bank.fromJson(e)).toList();
+        result = json.map((e) => BankDetail.fromJson(e)).toList();
       }
     }).catchError((e) {
       print(e.toString());
@@ -254,6 +255,70 @@ class HttpRequest {
       print(value.body);
       print(value.statusCode);
       if (value.statusCode == 200) {
+        final json = jsonDecode(value.body);
+
+        result = SavingAccount.fromJson(json);
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  Future<LoanAccount> addLoanAccount(
+      LoanAccount loanAccount, String token) async {
+    LoanAccount result;
+    Uri uri = Uri.https(prefix, '/api/transactions/add-loan-account/');
+    String _url = "";
+    print(Uri.decodeFull(uri.path));
+    HttpClient httpClient = bypassSSL();
+    //send request
+    IOClient ioClient = new IOClient(httpClient);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+    };
+    await ioClient
+        .post(uri, headers: headers, body: json.encode(loanAccount.toJson()))
+        .then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200) {
+        final json = jsonDecode(value.body);
+
+        result = LoanAccount.fromJson(json);
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
+
+  Future<SavingAccount> updateSavingAccount(
+      SavingAccount savingAccount, String token) async {
+    SavingAccount result;
+    Uri uri = Uri.https(prefix,
+        '/api/transactions/add-saving-account/' + savingAccount.id.toString());
+    print(Uri.decodeFull(uri.path));
+    HttpClient httpClient = bypassSSL();
+    //send request
+    IOClient ioClient = new IOClient(httpClient);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+    };
+    await ioClient
+        .put(uri, headers: headers, body: json.encode(savingAccount.toJson()))
+        .then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200 || value.statusCode == 204) {
         final json = jsonDecode(value.body);
 
         result = SavingAccount.fromJson(json);
