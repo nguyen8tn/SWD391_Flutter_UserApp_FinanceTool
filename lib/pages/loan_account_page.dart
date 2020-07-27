@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/services/calculation_http_request.dart';
-import 'package:swd/viewmodels/AddSavingAccountViewModel.dart';
+
 import 'package:swd/viewmodels/SavingAccountViewModel.dart';
 import 'package:toast/toast.dart';
 
@@ -21,10 +21,10 @@ class LoanAccountPage extends StatefulWidget {
   DateTime _startDate;
   int _term, _calculateDate, _bankID;
   bool isUpdate;
-
+  int id;
   List<Bank> banks = [];
 
-  LoanAccountPage({@required this.isUpdate});
+  LoanAccountPage({@required this.isUpdate, this.id});
 
   @override
   _LoanAccountPageState createState() => _LoanAccountPageState();

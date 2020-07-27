@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:intl/intl.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
@@ -129,6 +130,8 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                   },
                 );
               }
+            } else {
+              _autoValidate = true;
             }
             progress.dismiss();
           }
@@ -152,7 +155,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                   if (value.isEmpty) {
                                     return 'Enter a number';
                                   }
-                                  return '';
+                                  return null;
                                 },
                                 controller: _amountController,
                                 decoration:
@@ -175,7 +178,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                 if (value.isEmpty) {
                                   return 'Name must not be blanked';
                                 }
-                                return '';
+                                return null;
                               },
                             ),
                           ),
@@ -254,6 +257,12 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             leading: Icon(Icons.date_range),
                             title: TextFormField(
                               controller: _termController,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Enter a number';
+                                }
+                                return null;
+                              },
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 setState(() {

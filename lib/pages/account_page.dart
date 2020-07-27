@@ -106,6 +106,17 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  Widget _listUserLoan() {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return cardDetails(context, index);
+      },
+    );
+  }
+
   //card details
   Widget cardDetails(BuildContext context, int index) {
     return new InkWell(
