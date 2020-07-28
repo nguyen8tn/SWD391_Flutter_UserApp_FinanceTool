@@ -1,30 +1,20 @@
 import 'package:flutter/cupertino.dart';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
-import 'package:swd/models/SavingAccount.dart';
+import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/services/calculation_http_request.dart';
-
-import 'package:swd/viewmodels/SavingAccountViewModel.dart';
-import 'package:toast/toast.dart';
+import 'package:swd/viewmodels/LoanAccountViewModel.dart';
 
 class LoanAccountPage extends StatefulWidget {
-  String _account;
-  double _interestRate, _freeRate, _amount;
-  DateTime _startDate;
-  int _term, _calculateDate, _bankID;
+  List<BankDetail> banks = [];
   bool isUpdate;
   int id;
-  List<Bank> banks = [];
-
-  LoanAccountPage({@required this.isUpdate, this.id});
+  LoanAccountPage({@required this.isUpdate, int id});
 
   @override
   _LoanAccountPageState createState() => _LoanAccountPageState();
@@ -35,8 +25,9 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
   DateTime _startDate = DateTime.now();
   BankDetail selectedBank;
   final _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
 
-  String title = "Tài Khoản Nợ";
+  String title = "Create Saving Account";
   TextEditingController _bankController = new TextEditingController();
   TextEditingController _accountController = new TextEditingController();
   TextEditingController _amountController = new TextEditingController();
@@ -70,20 +61,11 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
   @override
   void initState() {
     super.initState();
-    _accountController.addListener(() {
-      Toast.show(_accountController.text, context);
-      widget._account = _accountController.text;
-    });
-
-    _amountController.addListener(() {
-      Toast.show(_accountController.text, context);
-      widget._amount = double.parse(_amountController.text);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<SavingAccountViewModel>(context, listen: false);
+    final vm = Provider.of<LoanAccountViewModel>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.black12,
@@ -94,22 +76,64 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
         child: Builder(builder: (context) {
           final progress = ProgressHUD.of(context);
           void saveData() async {
+            progress.show();
             final prefs = await SharedPreferences.getInstance();
-            SavingAccount account = SavingAccount.sa(
-                0,
-                int.parse(_bankController.text.split(' - ').elementAt(0)),
-                prefs.getString('UID'),
-                _accountController.text,
-                double.parse(_amountController.text),
-                DateTime.parse(_startDate.toIso8601String()),
-                int.parse(_termController.text),
-                double.parse(_interestRateController.text),
-                double.parse(_freeInterestRateController.text),
-                int.parse(_numberDateController.text));
-            await HttpRequestC().addSavingAccount(account);
+            if (_formKey.currentState.validate()) {
+              LoanAccount account = LoanAccount.sa(
+                  0,
+                  int.parse(_bankController.text.split(' - ').elementAt(0)),
+                  prefs.getString('UID'),
+                  _accountController.text,
+                  double.parse(_amountController.text),
+                  DateTime.parse(_startDate.toIso8601String()),
+                  int.parse(_termController.text),
+                  double.parse(_interestRateController.text),
+                  double.parse(_freeInterestRateController.text),
+                  int.parse(_numberDateController.text));
+              var resutl = await HttpRequestC().addLoanAccount(account);
+              if (resutl != null) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Add Success'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Close'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    );
+                  },
+                );
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Add Failed'),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Close'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    );
+                  },
+                );
+              }
+            } else {
+              _autoValidate = true;
+            }
+            progress.dismiss();
           }
 
           return Form(
+            autovalidate: _autoValidate,
             key: _formKey,
             child: Container(
               child: SingleChildScrollView(
@@ -127,7 +151,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                   if (value.isEmpty) {
                                     return 'Enter a number';
                                   }
-                                  return '';
+                                  return null;
                                 },
                                 controller: _amountController,
                                 decoration:
@@ -150,7 +174,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                 if (value.isEmpty) {
                                   return 'Name must not be blanked';
                                 }
-                                return '';
+                                return null;
                               },
                             ),
                           ),
@@ -229,6 +253,12 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             leading: Icon(Icons.date_range),
                             title: TextFormField(
                               controller: _termController,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Enter a number';
+                                }
+                                return null;
+                              },
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 setState(() {

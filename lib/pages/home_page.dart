@@ -4,10 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:swd/pages/account_page.dart';
 import 'package:swd/pages/gross_net_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
+import 'package:swd/viewmodels/AccountListViewModel.dart';
 import 'package:swd/viewmodels/CalculationViewModel.dart';
 import 'package:swd/viewmodels/SavingAccountViewModel.dart';
-
-import 'calculator_menu.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,7 +17,10 @@ class _HomePageSate extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _children = [
-    AccountPage(),
+    ChangeNotifierProvider(
+      create: (context) => AccountListViewModel(),
+      child: AccountPage(),
+    ),
     ChangeNotifierProvider(
       create: (context) => SavingAccountViewModel(),
       child: SavingAccountPage(

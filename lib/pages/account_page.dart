@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/SavingAccount.dart';
+import 'package:swd/viewmodels/AccountListViewModel.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -15,31 +19,47 @@ class _AccountPageState extends State<AccountPage> {
     SavingAccount.smp("TPBANK", 0.067, DateTime.now(), 5000),
     SavingAccount.smp("Vietcombank", 0.023, DateTime.now(), 7500),
   ];
+  List<LoanAccount> loanList = [];
 
-  List<Widget> getListTab() {
+  List<Widget> getListTab(AccountListViewModel vm, BuildContext context) {
+    final progress = ProgressHUD.of(context);
     List<Widget> listTab = [
-      Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 40,
-              child: Card(
-                elevation: 3,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text('Total: ' +
-                      1213.toString() +
-                      ' (' +
-                      list.length.toString() +
-                      ' accounts)'),
-                ),
+      FutureBuilder<bool>(
+        future: vm.getListAccountSavingByUserID(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            progress.dismiss();
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: double.infinity,
+                    height: 40,
+                    child: Card(
+                      elevation: 3,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text('Total: ' +
+                            vm.totalSaving.toString() +
+                            ' (' +
+                            vm.listSaving.length.toString() +
+                            ' accounts)'),
+                      ),
+                    ),
+                  ),
+                  _listUserSaving(vm)
+                ],
               ),
-            ),
-            _listUserSaving()
-          ],
-        ),
-        color: Colors.black12,
+              color: Colors.black12,
+            );
+          } else {
+            progress.show();
+            return Padding(
+              padding: EdgeInsets.fromLTRB(40, 80, 40, 40),
+              child: Container(),
+            );
+          }
+        },
       ),
       Container(
         child: Column(
@@ -59,7 +79,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
             ),
-            _listUserSaving()
+            _listUserLoan(vm)
           ],
         ),
         color: Colors.black12,
@@ -70,55 +90,61 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final vm = Provider.of<AccountListViewModel>(context, listen: false);
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Account'),
-          centerTitle: true,
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                text: "Sổ Tiết Kiệm",
-              ),
-              Tab(
-                text: "Sổ Vay Ngân Hàng",
-              )
-            ],
+      child: ProgressHUD(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Tài Khoản Ngân Hàng'),
+            centerTitle: true,
+            bottom: TabBar(
+              tabs: [
+                Tab(
+                  text: "Sổ Tiết Kiệm",
+                ),
+                Tab(
+                  text: "Sổ Vay Ngân Hàng",
+                )
+              ],
+            ),
           ),
-        ),
-        body: TabBarView(
-          children: getListTab(),
+          body: Builder(builder: (context) {
+            return TabBarView(
+              children: getListTab(vm, context),
+            );
+          }),
         ),
       ),
     );
   }
 
   //list card
-  Widget _listUserSaving() {
+  Widget _listUserSaving(AccountListViewModel vm) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: 3,
+      itemCount: vm.listSaving.length,
       itemBuilder: (context, index) {
-        return cardDetails(context, index);
+        return cardDetails(vm, context, index, 0);
       },
     );
   }
 
-  Widget _listUserLoan() {
+  Widget _listUserLoan(AccountListViewModel vm) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       itemCount: 3,
       itemBuilder: (context, index) {
-        return cardDetails(context, index);
+        return cardDetails(vm, context, index, 1);
       },
     );
   }
 
   //card details
-  Widget cardDetails(BuildContext context, int index) {
+  Widget cardDetails(
+      AccountListViewModel vm, BuildContext context, int index, int type) {
     return new InkWell(
       onTap: () {},
       child: Container(
@@ -141,21 +167,23 @@ class _AccountPageState extends State<AccountPage> {
                         Row(
                           children: [
                             Text(
-                              list[index].name + "  ",
+                              vm.listSaving[index].name + "  ",
                               style: TextStyle(
                                 fontSize: 17,
                               ),
                             ),
                             Text(
-                              (list[index].interestRate * 100).toString(),
-                              style: TextStyle(color: Colors.green),
+                              (vm.listSaving[index].interestRate * 100)
+                                  .toString(),
+                              style: TextStyle(
+                                  color: type == 0 ? Colors.green : Colors.red),
                             )
                           ],
                         ),
                         Row(
                           children: [
                             Text(
-                              list[index].amount.toString(),
+                              vm.listSaving[index].amount.toString(),
                               style: TextStyle(
                                 fontSize: 30,
                               ),
@@ -178,7 +206,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             Align(
                               child: Text(DateFormat('dd/MM/yyyy')
-                                  .format(list[index].startDate)
+                                  .format(vm.listSaving[index].startDate)
                                   .toString()),
                               alignment: Alignment.topLeft,
                             )
@@ -210,7 +238,7 @@ class _AccountPageState extends State<AccountPage> {
 
   //popup option button
   Widget popupOption() {
-    List<String> choices = ['', 'Xoa', 'Tat Toan'];
+    List<String> choices = ['Xóa', 'Tất Toán'];
     return PopupMenuButton(
       elevation: 3.2,
       itemBuilder: (BuildContext context) {

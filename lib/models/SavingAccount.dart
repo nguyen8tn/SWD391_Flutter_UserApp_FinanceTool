@@ -46,27 +46,27 @@ class SavingAccount {
 
   factory SavingAccount.fromJson(Map<String, dynamic> json) {
     return SavingAccount(
-        id: json['id'],
-        bankID: json['bankID'],
-        uid: json['uid'],
-        name: json['name'],
-        amount: json['amount'],
-        startDate: json['startDate'],
-        term: json['term'],
-        interestRate: json['interestRate'],
-        freeInterestRate: json['freeInterestRate'],
-        calculationDay: json['calculationDay']);
+        id: json['ID'],
+        bankID: json['BankID'],
+        uid: json['UID'],
+        name: json['Name'],
+        amount: json['Amount'],
+        startDate: DateTime.parse(json['StartDate']),
+        term: json['Term'],
+        interestRate: json['InterestRate'],
+        freeInterestRate: json['FreeInterestRate'],
+        calculationDay: json['CalculationDay']);
   }
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'uid': uid,
-        'bankID': bankID,
-        'name': name,
-        'amount': amount,
-        'startDate': startDate.toIso8601String(),
-        'term': term,
-        'interestRate': interestRate,
-        'freeInterestRate': freeInterestRate,
-        'calculationDay': calculationDay
+        'ID': id,
+        'UID': uid,
+        'BankID': bankID,
+        'Name': name,
+        'Amount': amount,
+        'StartDate': startDate.toIso8601String(),
+        'Term': term,
+        'InterestRate': interestRate,
+        'FreeInterestRate': freeInterestRate,
+        'CalculationDay': calculationDay
       };
 }
