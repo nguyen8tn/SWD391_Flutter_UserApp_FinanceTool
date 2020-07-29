@@ -10,15 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/services/calculation_http_request.dart';
-
-import 'package:swd/viewmodels/SavingAccountViewModel.dart';
+import 'package:swd/services/httprequest.dart';
+import 'package:swd/viewmodels/AccountDetailViewModel.dart';
 import 'package:toast/toast.dart';
 
 class SavingAccountPage extends StatefulWidget {
-  List<Bank> banks = [];
+  List<BankDetail> banks = [];
   bool isUpdate;
-  int id;
-  SavingAccountPage({@required this.isUpdate, int id});
+  SavingAccount account;
+  SavingAccountPage({@required this.isUpdate, this.account});
 
   @override
   _SavingAccountPageState createState() => _SavingAccountPageState();
@@ -31,7 +31,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
 
-  String title = "Create Saving Account";
+  String title = "";
   TextEditingController _bankController = new TextEditingController();
   TextEditingController _accountController = new TextEditingController();
   TextEditingController _amountController = new TextEditingController();
@@ -48,33 +48,44 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
   DateTime _dateTime = DateTime.now();
   DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
 
-  _selectStartDate(BuildContext context) async {
-    var _pickedDate = await showDatePicker(
-        context: context,
-        initialDate: _dateTime,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (_pickedDate != null) {
+  @override
+  void initState() {
+    super.initState();
+    isUpdating();
+  }
+
+  void isUpdating() async {
+    widget.banks = await HttpRequest().fetchBanks();
+    if (widget.isUpdate) {
       setState(() {
-        _dateTime = _pickedDate;
-        _startDateController.text = DateFormat("dd/MM/yyyy").format(_dateTime);
+        selectedBank = widget.banks
+            .singleWhere((element) => element.bankID == widget.account.bankID);
+        var bankName =
+            widget.account.bankID.toString() + ' - ' + selectedBank.bankName;
+        _accountController.text = widget.account.name;
+        _amountController.text = widget.account.amount.toString();
+        _bankController.text = bankName;
+        _termController.text = widget.account.term.toString();
+        _startDateController.text =
+            _dateFormat.format(widget.account.startDate);
+        _numberDateController.text = widget.account.calculationDay.toString();
+        _interestRateController.text = widget.account.interestRate.toString();
+        _freeInterestRateController.text =
+            widget.account.freeInterestRate.toString();
+        _endDateController.text = _dateFormat.format(widget.account.startDate
+            .add(Duration(days: widget.account.term * 30)));
       });
     }
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<SavingAccountViewModel>(context, listen: false);
+    final vm = Provider.of<AccountDetailViewModel>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.black12,
       appBar: AppBar(
-        title: Text(title ?? 'Create Saving Account'),
+        title: Text(
+            widget.isUpdate ? 'Cập Nhật Tài Khoản' : 'Tạo Tài Khoản Tiết Kiệm'),
       ),
       body: ProgressHUD(
         child: Builder(builder: (context) {
@@ -84,7 +95,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
             final prefs = await SharedPreferences.getInstance();
             if (_formKey.currentState.validate()) {
               SavingAccount account = SavingAccount.sa(
-                  0,
+                  widget.isUpdate ? widget.account.id : 0,
                   int.parse(_bankController.text.split(' - ').elementAt(0)),
                   prefs.getString('UID'),
                   _accountController.text,
@@ -94,13 +105,17 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                   double.parse(_interestRateController.text),
                   double.parse(_freeInterestRateController.text),
                   int.parse(_numberDateController.text));
-              var resutl = await HttpRequestC().addSavingAccount(account);
+              var resutl = widget.isUpdate
+                  ? await vm.updateSavingAccount(account)
+                  : await vm.addSavingAccount(account);
               if (resutl != null) {
                 showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text('Add Success'),
+                      title: Text(widget.isUpdate
+                          ? 'Cập Nhật Thành Công'
+                          : 'Thêm Mới Thành Công'),
                       actions: <Widget>[
                         FlatButton(
                           child: Text('Close'),
@@ -117,7 +132,9 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text('Add Failed'),
+                      title: Text(widget.isUpdate
+                          ? 'Cập Nhật Thât Bại'
+                          : 'Thêm Mới Thất Bại'),
                       actions: <Widget>[
                         FlatButton(
                           child: Text('Close'),
@@ -153,13 +170,12 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return 'Enter a number';
+                                    return 'Nhập số';
                                   }
                                   return null;
                                 },
                                 controller: _amountController,
-                                decoration:
-                                    InputDecoration(hintText: 'Amount')),
+                                decoration: InputDecoration(hintText: 'VNĐ')),
                           )
                         ],
                       ),
@@ -173,10 +189,10 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             title: TextFormField(
                               controller: _accountController,
                               decoration:
-                                  InputDecoration(hintText: 'Account name'),
+                                  InputDecoration(hintText: 'Tên Tài Khoản'),
                               validator: (value) {
                                 if (value.isEmpty) {
-                                  return 'Name must not be blanked';
+                                  return 'Không được rỗng';
                                 }
                                 return null;
                               },
@@ -194,7 +210,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                               }
                               showMaterialSelectionPicker(
                                 context: context,
-                                title: "Bank Select",
+                                title: "Chọn Ngân Hàng",
                                 items: bankNames,
                                 selectedItem: bankNames.first,
                                 onChanged: (value) => setState(() {
@@ -215,7 +231,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                   readOnly: true,
                                   controller: _bankController,
                                   decoration: InputDecoration(
-                                      hintText: 'Bank',
+                                      hintText: 'Ngân Hàng',
                                       border: InputBorder.none),
                                 ),
                               ),
@@ -246,7 +262,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                 child: TextFormField(
                                   controller: _startDateController,
                                   decoration: InputDecoration(
-                                    labelText: 'Start date',
+                                    labelText: 'Ngày Bắt Đầu',
                                     hintText: 'dd/MM/yyyy',
                                   ),
                                 ),
@@ -259,7 +275,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                               controller: _termController,
                               validator: (value) {
                                 if (value.isEmpty) {
-                                  return 'Enter a number';
+                                  return 'Nhập 1 số';
                                 }
                                 return null;
                               },
@@ -288,7 +304,8 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                 });
                               },
                               decoration: InputDecoration(
-                                  labelText: 'Term', hintText: 'month'),
+                                  labelText: 'Kéo Dài (tháng)',
+                                  hintText: 'Tháng'),
                             ),
                           ),
                           ListTile(
@@ -296,7 +313,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             title: TextField(
                               controller: _endDateController,
                               decoration: InputDecoration(
-                                labelText: 'End date',
+                                labelText: 'Ngày Kết Thúc',
                                 hintText: 'dd/MM/yyyy',
                               ),
                             ),
@@ -314,7 +331,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Interest reate: "),
+                                child: Text(" Lãi Suất: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -339,7 +356,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Free interrest rate: "),
+                                child: Text(" Lãi Suất Phi Rủi Ro: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -364,7 +381,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Number for calculate: "),
+                                child: Text(" Số Ngày Trong Năm: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -380,22 +397,25 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: Text(' days'),
+                                child: Text(' ngày'),
                               )
                             ],
                           ),
                         ],
                       ),
                     ),
-                    Stack(
+                    Column(
                       children: [
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 10),
                         RaisedButton(
                           onPressed: () {
                             saveData();
                           },
-                          child: Text('Save'),
-                        )
+                          child: Text(widget.isUpdate
+                              ? 'Cập Nhật Tài Khoản'
+                              : 'Thêm Mới'),
+                        ),
+                        SizedBox(height: 15)
                       ],
                     )
                   ],

@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:swd/pages/account_page.dart';
 import 'package:swd/pages/gross_net_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
+import 'package:swd/viewmodels/AccountDetailViewModel.dart';
 import 'package:swd/viewmodels/AccountListViewModel.dart';
 import 'package:swd/viewmodels/CalculationViewModel.dart';
-import 'package:swd/viewmodels/SavingAccountViewModel.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +22,7 @@ class _HomePageSate extends State<HomePage> {
       child: AccountPage(),
     ),
     ChangeNotifierProvider(
-      create: (context) => SavingAccountViewModel(),
+      create: (context) => AccountDetailViewModel(),
       child: SavingAccountPage(
         isUpdate: false,
       ),

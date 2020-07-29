@@ -1,20 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:intl/intl.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/LoanAccount.dart';
+import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/services/calculation_http_request.dart';
-import 'package:swd/viewmodels/LoanAccountViewModel.dart';
+import 'package:swd/services/httprequest.dart';
+import 'package:swd/viewmodels/AccountDetailViewModel.dart';
+
+import 'package:toast/toast.dart';
 
 class LoanAccountPage extends StatefulWidget {
   List<BankDetail> banks = [];
   bool isUpdate;
-  int id;
-  LoanAccountPage({@required this.isUpdate, int id});
+  LoanAccount account;
+  LoanAccountPage({@required this.isUpdate, this.account});
 
   @override
   _LoanAccountPageState createState() => _LoanAccountPageState();
@@ -27,7 +33,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
 
-  String title = "Create Saving Account";
+  String title = "Tạo Tài Khoản Vay";
   TextEditingController _bankController = new TextEditingController();
   TextEditingController _accountController = new TextEditingController();
   TextEditingController _amountController = new TextEditingController();
@@ -44,33 +50,44 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
   DateTime _dateTime = DateTime.now();
   DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
 
-  _selectStartDate(BuildContext context) async {
-    var _pickedDate = await showDatePicker(
-        context: context,
-        initialDate: _dateTime,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100));
-    if (_pickedDate != null) {
+  @override
+  void initState() {
+    super.initState();
+    isUpdating();
+  }
+
+  void isUpdating() async {
+    widget.banks = await HttpRequest().fetchBanks();
+    if (widget.isUpdate) {
       setState(() {
-        _dateTime = _pickedDate;
-        _startDateController.text = DateFormat("dd/MM/yyyy").format(_dateTime);
+        selectedBank = widget.banks
+            .singleWhere((element) => element.bankID == widget.account.bankID);
+        var bankName =
+            widget.account.bankID.toString() + ' - ' + selectedBank.bankName;
+        _accountController.text = widget.account.name;
+        _amountController.text = widget.account.amount.toString();
+        _bankController.text = bankName;
+        _termController.text = widget.account.term.toString();
+        _startDateController.text =
+            _dateFormat.format(widget.account.startDate);
+        _numberDateController.text = widget.account.calculationDay.toString();
+        _interestRateController.text = widget.account.interestRate.toString();
+        _freeInterestRateController.text =
+            widget.account.freeInterestRate.toString();
+        _endDateController.text = _dateFormat.format(widget.account.startDate
+            .add(Duration(days: widget.account.term * 30)));
       });
     }
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<LoanAccountViewModel>(context, listen: false);
+    final vm = Provider.of<AccountDetailViewModel>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.black12,
       appBar: AppBar(
-        title: Text(title ?? 'Create Saving Account'),
+        title:
+            Text(widget.isUpdate ? 'Cập Nhật Tài Khoản' : 'Thêm Mới Tài Khoản'),
       ),
       body: ProgressHUD(
         child: Builder(builder: (context) {
@@ -80,7 +97,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
             final prefs = await SharedPreferences.getInstance();
             if (_formKey.currentState.validate()) {
               LoanAccount account = LoanAccount.sa(
-                  0,
+                  widget.isUpdate ? widget.account.id : 0,
                   int.parse(_bankController.text.split(' - ').elementAt(0)),
                   prefs.getString('UID'),
                   _accountController.text,
@@ -90,13 +107,17 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                   double.parse(_interestRateController.text),
                   double.parse(_freeInterestRateController.text),
                   int.parse(_numberDateController.text));
-              var resutl = await HttpRequestC().addLoanAccount(account);
+              var resutl = widget.isUpdate
+                  ? await vm.updateLoanAccount(account)
+                  : await vm.updateLoanAccount(account);
               if (resutl != null) {
                 showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text('Add Success'),
+                      title: Text(widget.isUpdate
+                          ? 'Cập Nhật Thành Công'
+                          : 'Thêm Mới Thành Công'),
                       actions: <Widget>[
                         FlatButton(
                           child: Text('Close'),
@@ -113,7 +134,9 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text('Add Failed'),
+                      title: Text(widget.isUpdate
+                          ? 'Cập Nhật Thât Bại'
+                          : 'Thêm Mới Thất Bại'),
                       actions: <Widget>[
                         FlatButton(
                           child: Text('Close'),
@@ -149,13 +172,12 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return 'Enter a number';
+                                    return 'Nhập số';
                                   }
                                   return null;
                                 },
                                 controller: _amountController,
-                                decoration:
-                                    InputDecoration(hintText: 'Amount')),
+                                decoration: InputDecoration(hintText: 'VNĐ')),
                           )
                         ],
                       ),
@@ -169,10 +191,10 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             title: TextFormField(
                               controller: _accountController,
                               decoration:
-                                  InputDecoration(hintText: 'Account name'),
+                                  InputDecoration(hintText: 'Tên Tài Khoản'),
                               validator: (value) {
                                 if (value.isEmpty) {
-                                  return 'Name must not be blanked';
+                                  return 'Không được rỗng';
                                 }
                                 return null;
                               },
@@ -190,7 +212,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                               }
                               showMaterialSelectionPicker(
                                 context: context,
-                                title: "Bank Select",
+                                title: "Chọn Ngân Hàng",
                                 items: bankNames,
                                 selectedItem: bankNames.first,
                                 onChanged: (value) => setState(() {
@@ -211,7 +233,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                   readOnly: true,
                                   controller: _bankController,
                                   decoration: InputDecoration(
-                                      hintText: 'Bank',
+                                      hintText: 'Ngân Hàng',
                                       border: InputBorder.none),
                                 ),
                               ),
@@ -242,7 +264,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                 child: TextFormField(
                                   controller: _startDateController,
                                   decoration: InputDecoration(
-                                    labelText: 'Start date',
+                                    labelText: 'Ngày Bắt Đầu',
                                     hintText: 'dd/MM/yyyy',
                                   ),
                                 ),
@@ -255,7 +277,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                               controller: _termController,
                               validator: (value) {
                                 if (value.isEmpty) {
-                                  return 'Enter a number';
+                                  return 'Nhập 1 số';
                                 }
                                 return null;
                               },
@@ -284,7 +306,8 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                                 });
                               },
                               decoration: InputDecoration(
-                                  labelText: 'Term', hintText: 'month'),
+                                  labelText: 'Kéo Dài (tháng)',
+                                  hintText: 'Tháng'),
                             ),
                           ),
                           ListTile(
@@ -292,7 +315,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             title: TextField(
                               controller: _endDateController,
                               decoration: InputDecoration(
-                                labelText: 'End date',
+                                labelText: 'Ngày Kết Thúc',
                                 hintText: 'dd/MM/yyyy',
                               ),
                             ),
@@ -310,7 +333,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Interest reate: "),
+                                child: Text(" Lãi Suất: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -335,7 +358,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Free interrest rate: "),
+                                child: Text(" Lãi Suất Phi Rủi Ro: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -360,7 +383,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: Text(" Number for calculate: "),
+                                child: Text(" Số Ngày Trong Năm: "),
                               ),
                               Expanded(
                                 flex: 1,
@@ -376,22 +399,25 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: Text(' days'),
+                                child: Text(' ngày'),
                               )
                             ],
                           ),
                         ],
                       ),
                     ),
-                    Stack(
+                    Column(
                       children: [
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 10),
                         RaisedButton(
                           onPressed: () {
                             saveData();
                           },
-                          child: Text('Save'),
-                        )
+                          child: Text(widget.isUpdate
+                              ? 'Cập Nhật Tài Khoản'
+                              : 'Thêm Mới'),
+                        ),
+                        SizedBox(height: 15)
                       ],
                     )
                   ],

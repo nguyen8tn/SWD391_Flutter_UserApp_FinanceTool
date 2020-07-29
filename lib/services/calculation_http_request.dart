@@ -131,8 +131,8 @@ class HttpRequestC {
     await _ioClient
         .put(uri, headers: headers, body: json.encode(savingAccount.toJson()))
         .then((value) {
-      print(value.body);
-      print(value.statusCode);
+      print('respone: ' + value.body);
+      print('status code: ' + value.statusCode.toString());
       if (value.statusCode == 200 || value.statusCode == 204) {
         final body = jsonDecode(value.body);
         result = SavingAccount.fromJson(body);
@@ -300,7 +300,7 @@ class HttpRequestC {
     var result = false;
     var uri = Uri.https(
         'financial-web-service.azurewebsites.net',
-        'api/transactions/delete-accounts/' + id.toString(),
+        '/api/transactions/delete-account/' + id.toString(),
         type == 1 ? savingQuery : loanQuery);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
