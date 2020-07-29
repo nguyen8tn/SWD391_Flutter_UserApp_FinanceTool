@@ -1,11 +1,13 @@
 class Operand {
-  final String id;
-  final String name;
-  final double value;
-  final int type;
-  final String desc;
-  final int sequence;
-  final int baseFormula;
+  String id;
+  String name;
+  double value;
+  int type;
+  String desc;
+  int sequence;
+  int baseFormula;
+  String expression;
+  int operandID;
 
   Operand(
       {this.baseFormula,
@@ -14,26 +16,33 @@ class Operand {
       this.name,
       this.sequence,
       this.type,
-      this.value});
+      this.value,
+      this.expression,
+      this.operandID});
 
   factory Operand.fromJson(Map<String, dynamic> json) {
     return Operand(
-        id: json["id"].toString(),
-        name: json['name'],
-        value: json['value'],
-        baseFormula: json['baseFormulaID'],
-        desc: json['description'],
-        sequence: json['sequence'],
-        type: json['type']);
+      id: json["id"].toString(),
+      name: json['name'],
+      value: json['value'],
+      type: json['type'],
+      desc: json['description'],
+      sequence: json['sequence'],
+      baseFormula: json['BaseFormulaID'],
+      expression: json['expression'],
+      operandID: json['OperandID'],
+    );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'value': value,
-        'baseFormulaID': baseFormula,
+        'type': type,
         'description': desc,
         'sequence': sequence,
-        'type': type
+        'baseFormulaID': baseFormula,
+        'expression': expression,
+        'OperandID': operandID
       };
 }

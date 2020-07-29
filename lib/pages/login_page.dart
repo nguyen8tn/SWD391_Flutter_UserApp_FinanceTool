@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,15 +30,24 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 progress.show();
                 SharedPreferences prefs = await SharedPreferences.getInstance();
-
                 await AuthService().signInWithGoogle().then((value) async {
                   if (value != null) {
                     print('----------value: ' + value.id);
                     prefs.setString('UID', value.id);
                     print(prefs.getString('UID'));
-                    await HttpRequest().login(value).then((value) {
-                      print('----------value2: ' + value);
-                      prefs.setString('Token', value);
+                    await HttpRequest().login(value).then((value) async {
+                      String t = "t ";
+                      await FirebaseAuth.instance
+                          .signInWithCustomToken(token: value)
+                          .then((value) async {
+                        await value.user
+                            .getIdToken(refresh: false)
+                            .then((value) {
+                          t = value.token;
+                          print("asd " + t);
+                          prefs.setString('Token', t);
+                        });
+                      });
                       if (value.isNotEmpty) {
                         progress.dismiss();
                         Navigator.of(context)

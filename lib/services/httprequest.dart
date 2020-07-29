@@ -18,6 +18,7 @@ class HttpRequest {
   IOClient _ioClient;
   static SharedPreferences prefs;
   final prefix = 'financial-web-service.azurewebsites.net';
+  String local = "10.0.2.2:5001";
 
   Future<String> getUserDetails(User user) async {
     String userDetail = "";
@@ -114,8 +115,7 @@ class HttpRequest {
     //ssl
     HttpClient httpClient = bypassSSL();
     //path
-    Uri uri =
-        Uri.https('financial-web-service.azurewebsites.net', '/api/auth/login');
+    Uri uri = Uri.https(prefix, '/api/auth/login');
     //send request
     IOClient ioClient = new IOClient(httpClient);
     await ioClient

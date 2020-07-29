@@ -35,8 +35,6 @@ class AuthService {
         .getIdToken(refresh: false)
         .then((value) => value)
         .timeout(duration);
-    Map<String, String> customClaims = {'role': 'user'};
-    idTokenResult.claims.addAll(customClaims);
     User user = new User(idTokenResult.token, firebaseUser.uid,
         firebaseUser.displayName, firebaseUser.email);
     storage.write(key: "token", value: idTokenResult.token);
@@ -66,8 +64,8 @@ class AuthService {
             .getIdToken(refresh: false)
             .then((value) => value)
             .timeout(duration);
-        Map<String, String> customClaims = {'role': 'user'};
-        idTokenResult.claims.addAll(customClaims);
+        // Map<String, String> customClaims = {'role': 'user'};
+        // idTokenResult.claims.addAll(customClaims);
         print('User:  ' +
             firebaseUser.uid +
             firebaseUser.displayName +

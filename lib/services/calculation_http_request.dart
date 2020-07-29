@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/LoanAccount.dart';
+import 'package:swd/models/Operand.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/models/Caculation.dart';
 
@@ -27,27 +28,106 @@ class HttpRequestC {
     'type': '2',
   };
   SharedPreferences prefs;
+  String local = "10.0.2.2:5001";
+  String deploy = "financial-web-service.azurewebsites.net";
 
   Future<List<BaseFormula>> getAllBaseFormula() async {
     List<BaseFormula> result;
     _httpClient = HttpRequest().bypassSSL();
-    Uri uri =
-        Uri.https('financial-web-service.azurewebsites.net', '/api/auth/login');
+    Uri uri = Uri.https(deploy, 'api/caculation/get-all-base-formula-by-user');
     _ioClient = new IOClient(_httpClient);
     await _ioClient.get(uri).then((value) {
       print("statuscode: " + value.statusCode.toString());
-      if (value.statusCode == 200) {
-        final body = jsonDecode(value.body);
-        final Iterable json = body["values"];
-        result = json.map((bank) => BaseFormula.fromJson(bank)).toList();
-        return result;
+      switch (value.statusCode) {
+        case 200:
+          final body = jsonDecode(value.body);
+          final Iterable json = body;
+          result = json.map((bank) => BaseFormula.fromJson(bank)).toList();
+          break;
+        case 404:
+          result.add(new BaseFormula(id: 1, name: 'Không có trang khả dụng'));
       }
-    }).catchError((e) {
-      print(e.toString());
-    }).whenComplete(() {
-      closeConnection();
     });
-    return null;
+    return result;
+  }
+
+  Future<Map<String, List<Operand>>> calculateFormula(
+      List<Operand> listInput, int id) async {
+//    var queryParameters = {
+//      'bfID': '$id',
+//    };
+
+//    Map<String, String> headers = {
+////      'Content-Type': 'application/json',
+////      'Accept': 'application/json',
+////      'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
+////    };
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+    _httpClient = HttpRequest().bypassSSL();
+    Uri uri = Uri.https(local, '/api/caculation/calculate-formula/' + '$id');
+    _ioClient = new IOClient(_httpClient);
+    Map<String, List<Operand>> result;
+    await _ioClient
+        .post(uri, headers: headers, body: json.encode(listInput))
+        .then((value) {
+      print("statuscode: " + value.statusCode.toString() + value.body);
+      switch (value.statusCode) {
+        case 200:
+          List<Operand> listOp;
+          final body = jsonDecode(value.body);
+          final Iterable json = body["operands"];
+          double lt = body["result"];
+          listOp = json.map((e) => Operand.fromJson(e)).toList();
+          result = {lt.toString(): listOp};
+          break;
+        case 400:
+          return null;
+          break;
+        case 500:
+          return null;
+          break;
+      }
+    }).whenComplete(() => {});
+    return result;
+  }
+
+  Future<List<Operand>> pushOperand(int baseFormalID) async {
+    int id = 1;
+//    var queryParameters = {
+//      'bfID': '$id',
+//    };
+
+//    Map<String, String> headers = {
+////      'Content-Type': 'application/json',
+////      'Accept': 'application/json',
+////      'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
+////    };
+    _httpClient = HttpRequest().bypassSSL();
+    Uri uri = Uri.https(
+        deploy,
+        '/api/caculation/push-user-input-operand-by-base-formula/' +
+            '$baseFormalID');
+    _ioClient = new IOClient(_httpClient);
+    List<Operand> result;
+    await _ioClient.get(uri).then((value) {
+      switch (value.statusCode) {
+        case 200:
+          final body = jsonDecode(value.body);
+          final Iterable json = body;
+          result = json.map((e) => Operand.fromJson(e)).toList();
+          break;
+        case 400:
+          return null;
+          break;
+        case 500:
+          return null;
+          break;
+      }
+    }).whenComplete(() => {});
+    return result;
   }
 
   Future<SavingAccount> addSavingAccount(SavingAccount account) async {

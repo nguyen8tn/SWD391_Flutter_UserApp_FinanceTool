@@ -73,6 +73,7 @@ class _GrossNetConvertionState extends State<GrossNetConvertionPage> {
                   hasData == true
                       ? Expanded(
                           child: DataTable(
+                            rows: [],
                             columns: [DataColumn(label: Text('asd'))],
                           ),
                         )

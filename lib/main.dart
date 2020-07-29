@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:swd/pages/base_formula_details.dart';
+import 'package:swd/pages/calculator_menu.dart';
 import 'package:swd/pages/gross_net_page.dart';
 import 'package:swd/pages/home_page.dart';
 import 'package:swd/pages/login_page.dart';
@@ -15,7 +17,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: "Financial Service", home: LoginPage());
+    return MaterialApp(title: "Financial Service", home: CalculatorMenuPage());
   }
 }
 
