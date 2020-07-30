@@ -444,12 +444,13 @@ class _AccountPageState extends State<AccountPage> {
                 loanAccount.amount, loanAccount.interestRate)))),
         DataCell(Text(isSaving
             ? oCcy.format(getTotalMoneyAfterAMonth(savingAccount.interestRate))
-            : oCcy.format(getTotalMoneyAfterAMonth(loanAccount.interestRate)))),
+            : oCcy.format(getPayableAmountMonthly(loanAccount.amount,
+                loanAccount.interestRate, loanAccount.term)))),
         DataCell(Text(isSaving
             ? oCcy.format(
                 getTotalMoneyBeforeAnnual(savingAccount.freeInterestRate, i))
             : oCcy.format(
-                getTotalMoneyBeforeAnnual(loanAccount.freeInterestRate, i))))
+                getLoanAmountLeft(loanAccount.amount, loanAccount.term))))
       ]);
       result.add(row);
     }
@@ -471,6 +472,19 @@ class _AccountPageState extends State<AccountPage> {
     return money;
   }
 
+  double getPayableAmountMonthly(double amount, double interestRate, int term) {
+    return (amount / term) + getInterestMoneyPerMonth(amount, interestRate);
+  }
+
+  double getLoanAmountLeft(double amount, int term) {
+    var monthlyAmount = (amount / term);
+    if (money < monthlyAmount) {
+      return money;
+    }
+    money -= monthlyAmount;
+    return money;
+  }
+
   double getTotalMoneyBeforeAnnual(double freeInterestRate, int month) {
     if ((month % 12) == 0) {
       moneyRisk = money;
@@ -482,6 +496,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Dialog customDialog(
       BuildContext context, AccountListViewModel vm, int index, int type) {
+    var isSaving = type == 0;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
@@ -496,18 +511,25 @@ class _AccountPageState extends State<AccountPage> {
                 scrollDirection: Axis.horizontal,
                 child: Column(
                   children: <Widget>[
-                    Text(
-                      'Thông Tin Lãi',
-                      textAlign: TextAlign.right,
-                    ),
+                    isSaving
+                        ? Text(
+                            'Thông Tin Lãi Tiết Kiệm',
+                            textAlign: TextAlign.right,
+                          )
+                        : Text('Thông Tin Lãi Vay'),
                     DataTable(columns: [
                       DataColumn(label: Text('Ngày Đáo Hạn')),
                       DataColumn(
-                          label: Text('Số Lãi Thường Niên'), numeric: true),
+                          label: Text('Số Lãi Hàng Tháng'), numeric: true),
                       DataColumn(
-                          label: Text('Tất Toán Trong Kỳ'), numeric: true),
+                          label: isSaving
+                              ? Text('Tất Toán Đúng Thời Hạn')
+                              : Text('Trả Lãi Lẫn Gốc Hằng Tháng'),
+                          numeric: true),
                       DataColumn(
-                          label: Text('Tất Toán Trước Thời Hạn'),
+                          label: isSaving
+                              ? Text('Tất Toán Trước Thời Hạn')
+                              : Text('Số Nợ Còn Lại'),
                           numeric: true),
                     ], rows: getListDataCell(vm, index, type)),
                   ],
