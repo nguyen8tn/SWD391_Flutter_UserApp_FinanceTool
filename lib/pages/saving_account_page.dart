@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/pages/account_page.dart';
+import 'package:swd/pages/home_page.dart';
 import 'package:swd/services/calculation_http_request.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
@@ -129,10 +130,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChangeNotifierProvider(
-                                    create: (context) => AccountListViewModel(),
-                                    child: AccountPage(),
-                                  ),
+                                  builder: (context) => HomePage(),
                                 ));
                           },
                         )
@@ -152,7 +150,11 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                         FlatButton(
                           child: Text('Close'),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ));
                           },
                         )
                       ],

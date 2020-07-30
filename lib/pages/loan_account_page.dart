@@ -11,6 +11,7 @@ import 'package:swd/models/Bank.dart';
 import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/pages/account_page.dart';
+import 'package:swd/pages/home_page.dart';
 import 'package:swd/services/calculation_http_request.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
@@ -132,10 +133,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChangeNotifierProvider(
-                                    create: (context) => AccountListViewModel(),
-                                    child: AccountPage(),
-                                  ),
+                                  builder: (context) => HomePage(),
                                 ));
                           },
                         )
@@ -155,7 +153,11 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                         FlatButton(
                           child: Text('Close'),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ));
                           },
                         )
                       ],

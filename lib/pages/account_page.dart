@@ -19,7 +19,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  int money = 123;
   int tabIndex = 0;
   List<SavingAccount> listSaving = [
     SavingAccount.smp("TPBANK", 0.063, DateTime.now(), 1234),
@@ -28,7 +27,8 @@ class _AccountPageState extends State<AccountPage> {
   ];
   List<LoanAccount> listLoan = [];
   final oCcy = new NumberFormat("#,##0.00", "en_US");
-
+  double money = 0;
+  double moneyRisk = 0;
   List<Widget> getListTab(AccountListViewModel vm, BuildContext context) {
     final progress = ProgressHUD.of(context);
     List<Widget> listTab = [
@@ -404,14 +404,14 @@ class _AccountPageState extends State<AccountPage> {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return customDialog(context, vm);
+                          return customDialog(context, vm, index, type);
                         });
                     break;
                   default:
                     break;
                 }
               },
-              leading: Icon(Icons.map),
+              leading: Icon(Icons.menu),
               title: Text(choice),
             ),
           );
@@ -420,7 +420,68 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Dialog customDialog(BuildContext context, AccountListViewModel vm) {
+  List<DataRow> getListDataCell(AccountListViewModel vm, int index, int type) {
+    List<DataRow> result = [];
+    bool isSaving = type == 0;
+
+    SavingAccount savingAccount =
+        isSaving ? vm.listSaving[index] : SavingAccount();
+    LoanAccount loanAccount = isSaving ? LoanAccount() : vm.listLoans[index];
+
+    var term = isSaving ? vm.listSaving[index].term : vm.listLoans[index].term;
+    money = isSaving ? vm.listSaving[index].amount : vm.listLoans[index].amount;
+    moneyRisk = money;
+
+    for (var i = 1; i <= term; i++) {
+      var row = DataRow(cells: [
+        DataCell(Text(isSaving
+            ? getAddedDateString(savingAccount.startDate, i * 30)
+            : getAddedDateString(loanAccount.startDate, i * 30))),
+        DataCell(Text(isSaving
+            ? oCcy.format(getInterestMoneyPerMonth(
+                savingAccount.amount, savingAccount.interestRate))
+            : oCcy.format(getInterestMoneyPerMonth(
+                loanAccount.amount, loanAccount.interestRate)))),
+        DataCell(Text(isSaving
+            ? oCcy.format(getTotalMoneyAfterAMonth(savingAccount.interestRate))
+            : oCcy.format(getTotalMoneyAfterAMonth(loanAccount.interestRate)))),
+        DataCell(Text(isSaving
+            ? oCcy.format(
+                getTotalMoneyBeforeAnnual(savingAccount.freeInterestRate, i))
+            : oCcy.format(
+                getTotalMoneyBeforeAnnual(loanAccount.freeInterestRate, i))))
+      ]);
+      result.add(row);
+    }
+    money = 0;
+    moneyRisk = 0;
+    return result;
+  }
+
+  String getAddedDateString(DateTime time, int day) {
+    return DateFormat('dd/MM/yyyy').format(time.add(Duration(days: day)));
+  }
+
+  double getInterestMoneyPerMonth(double money, double interestRate) {
+    return money * ((interestRate / 12) / 100);
+  }
+
+  double getTotalMoneyAfterAMonth(double interestRate) {
+    money += getInterestMoneyPerMonth(money, interestRate);
+    return money;
+  }
+
+  double getTotalMoneyBeforeAnnual(double freeInterestRate, int month) {
+    if ((month % 12) == 0) {
+      moneyRisk = money;
+    } else {
+      moneyRisk += getInterestMoneyPerMonth(moneyRisk, freeInterestRate);
+    }
+    return moneyRisk;
+  }
+
+  Dialog customDialog(
+      BuildContext context, AccountListViewModel vm, int index, int type) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
@@ -441,26 +502,14 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     DataTable(columns: [
                       DataColumn(label: Text('Ngày Đáo Hạn')),
-                      DataColumn(label: Text('Số Lãi'), numeric: true),
+                      DataColumn(
+                          label: Text('Số Lãi Thường Niên'), numeric: true),
                       DataColumn(
                           label: Text('Tất Toán Trong Kỳ'), numeric: true),
-                    ], rows: [
-                      DataRow(cells: [
-                        DataCell(Text('data')),
-                        DataCell(Text('data')),
-                        DataCell(Text('data'))
-                      ]),
-                      DataRow(cells: [
-                        DataCell(Text('data')),
-                        DataCell(Text('data')),
-                        DataCell(Text('data'))
-                      ]),
-                      DataRow(cells: [
-                        DataCell(Text('data')),
-                        DataCell(Text('data')),
-                        DataCell(Text('data'))
-                      ])
-                    ]),
+                      DataColumn(
+                          label: Text('Tất Toán Trước Thời Hạn'),
+                          numeric: true),
+                    ], rows: getListDataCell(vm, index, type)),
                   ],
                 ),
               ),

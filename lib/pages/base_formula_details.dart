@@ -167,7 +167,7 @@ class _BaseFormulaDetailsState extends State<BaseFormulaDetails> {
                 child: Column(
                   children: <Widget>[
                     Text(
-                      'Thông Tin Lãi',
+                      'Thông Tin Công Thức',
                       textAlign: TextAlign.right,
                     ),
                     DataTable(
