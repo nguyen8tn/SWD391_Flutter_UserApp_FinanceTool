@@ -25,6 +25,7 @@ class BankDetail {
   final double savingRateSix;
   final double savingRateTwelve;
   final double savingRateTwentyFour;
+  final double freeInterestRate;
 
   BankDetail(
       {this.bankID,
@@ -35,19 +36,20 @@ class BankDetail {
       this.loanRateTwentyFour,
       this.savingRateTwentyFour,
       this.savingRateSix,
-      this.savingRateTwelve});
+      this.savingRateTwelve,
+      this.freeInterestRate});
 
   factory BankDetail.fromJson(Map<String, dynamic> json) {
     return BankDetail(
-      bankID: json['id'],
-      bankIcon: json['bank_icon'],
-      bankName: json['name'],
-      loanRateSix: json['loanRateSix'],
-      loanRateTwelve: json['loanRateTwelve'],
-      loanRateTwentyFour: json['loanRateTwentyFour'],
-      savingRateSix: json['savingRateSix'],
-      savingRateTwelve: json['savingRateTwelve'],
-      savingRateTwentyFour: json['savingRateTwentyFour'],
-    );
+        bankID: json['id'],
+        bankIcon: json['bank_icon'],
+        bankName: json['name'],
+        loanRateSix: json['loanRateSix'],
+        loanRateTwelve: json['loanRateTwelve'],
+        loanRateTwentyFour: json['loanRateTwentyFour'],
+        savingRateSix: json['savingRateSix'],
+        savingRateTwelve: json['savingRateTwelve'],
+        savingRateTwentyFour: json['savingRateTwentyFour'],
+        freeInterestRate: json['freeInterest']);
   }
 }

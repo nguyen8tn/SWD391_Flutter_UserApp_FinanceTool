@@ -28,6 +28,7 @@ class HttpRequestC {
     'type': '2',
   };
   SharedPreferences prefs;
+
   String local = "10.0.2.2:5001";
   String deploy = "financial-web-service.azurewebsites.net";
 
@@ -67,7 +68,7 @@ class HttpRequestC {
       'Accept': 'application/json'
     };
     _httpClient = HttpRequest().bypassSSL();
-    Uri uri = Uri.https(local, '/api/caculation/calculate-formula/' + '$id');
+    Uri uri = Uri.https(deploy, '/api/caculation/calculate-formula/' + '$id');
     _ioClient = new IOClient(_httpClient);
     Map<String, List<Operand>> result;
     await _ioClient
@@ -175,6 +176,7 @@ class HttpRequestC {
     Uri uri = Uri.https('financial-web-service.azurewebsites.net',
         '/api/transactions/add-account', loanQuery);
     _ioClient = new IOClient(_httpClient);
+    print(uri.toString());
     await _ioClient
         .post(uri, headers: headers, body: json.encode(account.toJson()))
         .then((value) {
@@ -203,14 +205,13 @@ class HttpRequestC {
       'Accept': 'applica tion/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https(
-        'financial-web-service.azurewebsites.net',
-        '/api/transactions/update-account' + savingAccount.id.toString(),
-        savingQuery);
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
+        '/api/transactions/update-account/' + savingAccount.id.toString());
     _ioClient = new IOClient(_httpClient);
     await _ioClient
         .put(uri, headers: headers, body: json.encode(savingAccount.toJson()))
         .then((value) {
+      print('put: ' + uri.toString());
       print('respone: ' + value.body);
       print('status code: ' + value.statusCode.toString());
       if (value.statusCode == 200 || value.statusCode == 204) {
@@ -236,11 +237,10 @@ class HttpRequestC {
       'Accept': 'applica tion/json',
       'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
     };
-    Uri uri = Uri.https(
-        'financial-web-service.azurewebsites.net',
-        '/api/transactions/update-account' + loanAccount.id.toString(),
-        loanQuery);
+    Uri uri = Uri.https('financial-web-service.azurewebsites.net',
+        '/api/transactions/update-account/' + loanAccount.id.toString());
     _ioClient = new IOClient(_httpClient);
+    print(uri.toString());
     await _ioClient.delete(uri, headers: headers).then((value) {
       print(value.body);
       print(value.statusCode);

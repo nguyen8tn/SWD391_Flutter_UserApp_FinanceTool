@@ -9,6 +9,8 @@ class LoanAccount {
   double interestRate;
   double freeInterestRate;
   int calculationDay;
+  int type;
+  DateTime createdDate;
 
   LoanAccount(
       {this.id,
@@ -20,7 +22,9 @@ class LoanAccount {
       this.term,
       this.interestRate,
       this.freeInterestRate,
-      this.calculationDay});
+      this.calculationDay,
+      this.createdDate,
+      this.type});
 
   LoanAccount.smp(
       String name, double interestRate, DateTime startDate, double amount) {
@@ -40,33 +44,37 @@ class LoanAccount {
       this.term,
       this.interestRate,
       this.freeInterestRate,
-      this.calculationDay);
+      this.calculationDay,
+      this.type,
+      this.createdDate);
 
   LoanAccount.ms();
 
   factory LoanAccount.fromJson(Map<String, dynamic> json) {
     return LoanAccount(
-        id: json['id'],
-        bankID: json['bankID'],
-        uid: json['uid'],
-        name: json['name'],
-        amount: json['amount'],
-        startDate: json['startDate'],
-        term: json['term'],
-        interestRate: json['interestRate'],
-        freeInterestRate: json['freeInterestRate'],
-        calculationDay: json['calculationDay']);
+        id: json['ID'],
+        bankID: json['BankID'],
+        uid: json['UID'],
+        name: json['Name'],
+        amount: json['Amount'],
+        startDate: DateTime.parse(json['StartDate']),
+        term: json['Term'],
+        interestRate: json['InterestRate'],
+        freeInterestRate: json['FreeInterestRate'],
+        calculationDay: json['CalculationDay']);
   }
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'uid': uid,
-        'bankID': bankID,
-        'name': name,
-        'amount': amount,
-        'startDate': startDate.toIso8601String(),
-        'term': term,
-        'interestRate': interestRate,
-        'freeInterestRate': freeInterestRate,
-        'calculationDay': calculationDay
+        'ID': id,
+        'UID': uid,
+        'BankID': bankID,
+        'Name': name,
+        'Amount': amount,
+        'StartDate': startDate.toIso8601String(),
+        'Term': term,
+        'InterestRate': interestRate,
+        'FreeInterestRate': freeInterestRate,
+        'CalculationDay': calculationDay,
+        'CreatedDate': createdDate.toIso8601String(),
+        'Type': 2
       };
 }

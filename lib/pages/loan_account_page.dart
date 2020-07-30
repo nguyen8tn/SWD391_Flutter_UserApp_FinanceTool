@@ -10,9 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/SavingAccount.dart';
+import 'package:swd/pages/account_page.dart';
 import 'package:swd/services/calculation_http_request.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
+import 'package:swd/viewmodels/AccountListViewModel.dart';
 
 import 'package:toast/toast.dart';
 
@@ -49,7 +51,7 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
   int termDate;
   DateTime _dateTime = DateTime.now();
   DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
-
+  final oCcy = new NumberFormat("#,##0.00", "en_US");
   @override
   void initState() {
     super.initState();
@@ -86,8 +88,11 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(widget.isUpdate ? 'Cập Nhật Tài Khoản' : 'Thêm Mới Tài Khoản'),
+        backgroundColor: Color(0xFF1BC0C5),
+        centerTitle: true,
+        title: Text(widget.isUpdate
+            ? 'Cập Nhật Tài Khoản Vay'
+            : 'Thêm Mới Tài Khoản Vay'),
       ),
       body: ProgressHUD(
         child: Builder(builder: (context) {
@@ -106,10 +111,12 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                   int.parse(_termController.text),
                   double.parse(_interestRateController.text),
                   double.parse(_freeInterestRateController.text),
-                  int.parse(_numberDateController.text));
+                  int.parse(_numberDateController.text),
+                  2,
+                  DateTime.now());
               var resutl = widget.isUpdate
                   ? await vm.updateLoanAccount(account)
-                  : await vm.updateLoanAccount(account);
+                  : await vm.addLoanAccount(account);
               if (resutl != null) {
                 showDialog(
                   context: context,
@@ -122,7 +129,14 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                         FlatButton(
                           child: Text('Close'),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => AccountListViewModel(),
+                                    child: AccountPage(),
+                                  ),
+                                ));
                           },
                         )
                       ],
@@ -263,6 +277,12 @@ class _LoanAccountPageState extends State<LoanAccountPage> {
                               child: AbsorbPointer(
                                 child: TextFormField(
                                   controller: _startDateController,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Chọn Ngày';
+                                    }
+                                    return null;
+                                  },
                                   decoration: InputDecoration(
                                     labelText: 'Ngày Bắt Đầu',
                                     hintText: 'dd/MM/yyyy',

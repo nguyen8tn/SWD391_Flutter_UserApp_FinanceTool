@@ -9,9 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/Bank.dart';
 import 'package:swd/models/SavingAccount.dart';
+import 'package:swd/pages/account_page.dart';
 import 'package:swd/services/calculation_http_request.dart';
 import 'package:swd/services/httprequest.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
+import 'package:swd/viewmodels/AccountListViewModel.dart';
 import 'package:toast/toast.dart';
 
 class SavingAccountPage extends StatefulWidget {
@@ -47,7 +49,7 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
   int termDate;
   DateTime _dateTime = DateTime.now();
   DateFormat _dateFormat = DateFormat('dd-MM-yyyy');
-
+  final oCcy = new NumberFormat("#,##0.00", "en_US");
   @override
   void initState() {
     super.initState();
@@ -84,6 +86,8 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF1BC0C5),
+        centerTitle: true,
         title: Text(
             widget.isUpdate ? 'Cập Nhật Tài Khoản' : 'Tạo Tài Khoản Tiết Kiệm'),
       ),
@@ -104,11 +108,13 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                   int.parse(_termController.text),
                   double.parse(_interestRateController.text),
                   double.parse(_freeInterestRateController.text),
-                  int.parse(_numberDateController.text));
+                  int.parse(_numberDateController.text),
+                  1,
+                  DateTime.now());
               var resutl = widget.isUpdate
                   ? await vm.updateSavingAccount(account)
                   : await vm.addSavingAccount(account);
-              if (resutl != null) {
+              if (resutl) {
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -120,7 +126,14 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                         FlatButton(
                           child: Text('Close'),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => AccountListViewModel(),
+                                    child: AccountPage(),
+                                  ),
+                                ));
                           },
                         )
                       ],
@@ -167,6 +180,13 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                           ListTile(
                             leading: Icon(Icons.attach_money),
                             title: TextFormField(
+                                style: TextStyle(letterSpacing: 0.5),
+                                onEditingComplete: () {
+                                  var value =
+                                      double.parse(_amountController.text);
+                                  _amountController.text =
+                                      oCcy.format(value).toString();
+                                },
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -218,7 +238,8 @@ class _SavingAccountPageState extends State<SavingAccountPage> {
                                   selectedBank = vm.banks.firstWhere(
                                       (element) =>
                                           element.bankID == int.parse(id));
-
+                                  _freeInterestRateController.text =
+                                      selectedBank.freeInterestRate.toString();
                                   _bankController.text = value;
                                 }),
                               );

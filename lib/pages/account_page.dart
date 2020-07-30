@@ -7,9 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/SavingAccount.dart';
 import 'package:swd/pages/loan_account_page.dart';
+import 'package:swd/pages/login_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
 import 'package:swd/viewmodels/AccountListViewModel.dart';
+import 'dart:math' as math;
 
 class AccountPage extends StatefulWidget {
   @override
@@ -94,7 +96,6 @@ class _AccountPageState extends State<AccountPage> {
                   Expanded(child: _listUserLoan(vm))
                 ],
               ),
-              color: Colors.black12,
             );
           } else {
             progress.show();
@@ -117,9 +118,47 @@ class _AccountPageState extends State<AccountPage> {
       child: ProgressHUD(
         child: Scaffold(
           appBar: AppBar(
+            leading: Container(
+              child: Transform.rotate(
+                angle: 180 * math.pi / 180,
+                child: IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Do you want to log out?'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('Log Out'),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ));
+                            },
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.exit_to_app,
+                  ),
+                ),
+              ),
+            ),
+            backgroundColor: Color(0xFF1BC0C5),
             title: Text('Tài Khoản Ngân Hàng'),
             centerTitle: true,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(
                   text: "Sổ Tiết Kiệm",
@@ -163,7 +202,7 @@ class _AccountPageState extends State<AccountPage> {
             },
             label: Text('Add'),
             icon: Icon(Icons.add_circle),
-            backgroundColor: Colors.blue,
+            backgroundColor: Color(0xFF1BC0C5),
           ),
         ),
       ),
@@ -260,26 +299,30 @@ class _AccountPageState extends State<AccountPage> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              type == 0
-                                  ? vm.listSaving[index].name
-                                  : vm.listLoans[index].name + "  ",
-                              style: TextStyle(
-                                fontSize: 17,
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                type == 0
+                                    ? vm.listSaving[index].name
+                                    : vm.listLoans[index].name + "  ",
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              (type == 0
-                                          ? vm.listSaving[index].interestRate
-                                          : vm.listLoans[index].interestRate *
-                                              100)
-                                      .toString() +
-                                  '%',
-                              style: TextStyle(
-                                  color: type == 0 ? Colors.green : Colors.red),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                ((type == 0
+                                            ? vm.listSaving[index].interestRate
+                                            : vm.listLoans[index].interestRate))
+                                        .toString() +
+                                    '%',
+                                style: TextStyle(
+                                    color:
+                                        type == 0 ? Colors.green : Colors.red),
+                              ),
                             )
                           ],
                         ),
@@ -358,6 +401,11 @@ class _AccountPageState extends State<AccountPage> {
                     }
                     break;
                   case 'Xem Thống Kê':
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return customDialog(context, vm);
+                        });
                     break;
                   default:
                     break;
@@ -369,6 +417,57 @@ class _AccountPageState extends State<AccountPage> {
           );
         }).toList();
       },
+    );
+  }
+
+  Dialog customDialog(BuildContext context, AccountListViewModel vm) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: Container(
+        height: 500,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Flexible(
+            child: Container(
+                child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      'Thông Tin Lãi',
+                      textAlign: TextAlign.right,
+                    ),
+                    DataTable(columns: [
+                      DataColumn(label: Text('Ngày Đáo Hạn')),
+                      DataColumn(label: Text('Số Lãi'), numeric: true),
+                      DataColumn(
+                          label: Text('Tất Toán Trong Kỳ'), numeric: true),
+                    ], rows: [
+                      DataRow(cells: [
+                        DataCell(Text('data')),
+                        DataCell(Text('data')),
+                        DataCell(Text('data'))
+                      ]),
+                      DataRow(cells: [
+                        DataCell(Text('data')),
+                        DataCell(Text('data')),
+                        DataCell(Text('data'))
+                      ]),
+                      DataRow(cells: [
+                        DataCell(Text('data')),
+                        DataCell(Text('data')),
+                        DataCell(Text('data'))
+                      ])
+                    ]),
+                  ],
+                ),
+              ),
+            )),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -9,6 +9,8 @@ class SavingAccount {
   double interestRate;
   double freeInterestRate;
   int calculationDay;
+  int type;
+  DateTime createdDate;
 
   SavingAccount(
       {this.id,
@@ -20,7 +22,9 @@ class SavingAccount {
       this.term,
       this.interestRate,
       this.freeInterestRate,
-      this.calculationDay});
+      this.calculationDay,
+      this.type,
+      this.createdDate});
 
   SavingAccount.smp(
       String name, double interestRate, DateTime startDate, double amount) {
@@ -40,7 +44,9 @@ class SavingAccount {
       this.term,
       this.interestRate,
       this.freeInterestRate,
-      this.calculationDay);
+      this.calculationDay,
+      this.type,
+      this.createdDate);
 
   SavingAccount.ms();
 
@@ -67,6 +73,8 @@ class SavingAccount {
         'Term': term,
         'InterestRate': interestRate,
         'FreeInterestRate': freeInterestRate,
-        'CalculationDay': calculationDay
+        'CalculationDay': calculationDay,
+        'CreatedDate': createdDate.toIso8601String(),
+        'Type': 1
       };
 }
