@@ -155,7 +155,7 @@ class _BaseFormulaDetailsState extends State<BaseFormulaDetails> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
-        height: 400,
+        height: 350,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Flexible(

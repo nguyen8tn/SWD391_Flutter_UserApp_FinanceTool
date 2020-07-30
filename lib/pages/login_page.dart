@@ -179,7 +179,14 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  FlutterLogo(size: 150),
+                  Image(
+                      height: 200,
+                      image: NetworkImage(
+                          'https://www.graphicsprings.com/filestorage/stencils/bffa2e9e186ac7342d4c75e69b42d458.png?width=500&height=500')),
+                  Text(
+                    'Personal Financial Helper',
+                    style: TextStyle(fontSize: 20),
+                  ),
                   SizedBox(height: 50),
                   _signInButton(),
                   _loginFBButton()
