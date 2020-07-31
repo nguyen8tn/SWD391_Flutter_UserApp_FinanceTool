@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:swd/models/Bank.dart';
 import 'package:swd/viewmodels/BankListViewModel.dart';
 import 'package:swd/widgets/bank_list.dart';
 
@@ -10,7 +11,7 @@ class BankListPage extends StatefulWidget {
 
 class _BankListpageState extends State<BankListPage> {
   final _controller = TextEditingController();
-
+  List<BankDetail> banks;
   @override
   void initState() {
     // TODO: implement initState
@@ -20,11 +21,12 @@ class _BankListpageState extends State<BankListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<BankListViewModel>(context);
+    final vm = Provider.of<BankListViewModel>(context, listen: false);
 
     return Scaffold(
-        appBar: AppBar(title: Text("Banks")),
-        body: Container(
+        body: FutureBuilder(
+      builder: (context, snapshot) {
+        return Container(
             padding: EdgeInsets.all(10),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
@@ -36,11 +38,11 @@ class _BankListpageState extends State<BankListPage> {
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   controller: _controller,
-                  onSubmitted: (value) {
-                    if (value.isNotEmpty) {
-                      // vm.fetchBanks(value);
-                      _controller.clear();
-                    }
+                  onSubmitted: (value) async {
+                    await vm.getBankByID(value);
+                    setState(() {
+                      banks = vm.list;
+                    });
                   },
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -50,6 +52,9 @@ class _BankListpageState extends State<BankListPage> {
                 ),
               ),
               Expanded(child: BankList(banks: vm.list))
-            ])));
+            ]));
+      },
+      future: vm.fetchBanks(),
+    ));
   }
 }

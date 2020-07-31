@@ -42,7 +42,7 @@ class BankDetail {
   factory BankDetail.fromJson(Map<String, dynamic> json) {
     return BankDetail(
         bankID: json['id'],
-        bankIcon: json['bank_icon'],
+        bankIcon: json['icon'],
         bankName: json['name'],
         loanRateSix: json['loanRateSix'],
         loanRateTwelve: json['loanRateTwelve'],

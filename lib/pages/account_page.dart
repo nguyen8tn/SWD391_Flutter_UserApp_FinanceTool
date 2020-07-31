@@ -6,12 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/SavingAccount.dart';
+import 'package:swd/pages/bank_list_page.dart';
 import 'package:swd/pages/loan_account_page.dart';
 import 'package:swd/pages/login_page.dart';
 import 'package:swd/pages/saving_account_page.dart';
 import 'package:swd/viewmodels/AccountDetailViewModel.dart';
 import 'package:swd/viewmodels/AccountListViewModel.dart';
 import 'dart:math' as math;
+
+import 'package:swd/viewmodels/BankListViewModel.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -106,6 +109,10 @@ class _AccountPageState extends State<AccountPage> {
           }
         },
       ),
+      ChangeNotifierProvider(
+        create: (context) => BankListViewModel(),
+        child: BankListPage(),
+      )
     ];
     return listTab;
   }
@@ -114,7 +121,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     final vm = Provider.of<AccountListViewModel>(context, listen: false);
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: ProgressHUD(
         child: Scaffold(
           appBar: AppBar(
@@ -165,7 +172,10 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 Tab(
                   text: "Sổ Vay Ngân Hàng",
-                )
+                ),
+                Tab(
+                  text: "Bank",
+                ),
               ],
             ),
           ),

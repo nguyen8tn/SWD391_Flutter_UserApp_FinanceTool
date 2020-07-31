@@ -65,7 +65,6 @@ class HttpRequest {
 
   Future<List<BankDetail>> fetchBanks() async {
     List<BankDetail> result;
-    var queryParameters = {'MinDate': 'one', 'Page': '1', 'Limit': '100'};
     var uri = Uri.https(
         'financial-web-service.azurewebsites.net', '/api/banks/get-bank');
 

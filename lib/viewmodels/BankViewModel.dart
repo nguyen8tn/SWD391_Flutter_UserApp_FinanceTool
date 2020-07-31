@@ -1,7 +1,7 @@
 import 'package:swd/models/Bank.dart';
 
 class BankViewModel {
-  final Bank bank;
+  final BankDetail bank;
 
   BankViewModel({this.bank});
 

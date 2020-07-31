@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swd/models/BankPackage.dart';
 import 'package:swd/models/LoanAccount.dart';
 import 'package:swd/models/Operand.dart';
 import 'package:swd/models/SavingAccount.dart';
@@ -403,4 +404,36 @@ class HttpRequestC {
     });
     return result;
   }
+
+  Future<List<BankPackage>> getListBankPackage(int keyword) async {
+    List<BankPackage> result;
+    prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('UID');
+    var uri = Uri.https('financial-web-service.azurewebsites.net',
+        '/api/rate/get-rates-of-bank/' + keyword.toString(), loanQuery);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + HttpRequest.prefs.get("apiToken")
+    };
+    print(uri);
+    _httpClient = HttpRequest().bypassSSL();
+    IOClient ioClient = new IOClient(_httpClient);
+    await ioClient.get(uri, headers: headers).then((value) {
+      print(value.body);
+      print(value.statusCode);
+      if (value.statusCode == 200 || value.statusCode == 201) {
+        final body = jsonDecode(value.body);
+        final Iterable json = body;
+        result = json.map((e) => BankPackage.fromJson(e)).toList();
+      }
+    }).catchError((e) {
+      print(e.toString());
+    }).whenComplete(() {
+      closeConnection();
+    });
+    return result;
+  }
 }
+
+///api/rate/get-rates-of-bank
